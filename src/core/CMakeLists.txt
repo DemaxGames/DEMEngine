@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.31.5)
+project(demengine)
+include_directories("../../include")
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+add_library(${PROJECT_NAME} SHARED Logger/Logger.cpp)

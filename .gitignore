@@ -39,3 +39,13 @@
 
 # debug information files
 *.dwo
+
+# vs code
+.vscode
+# win bat scripts
+*.bat
+#log files
+log.txt
+#cmake files
+d
+build
