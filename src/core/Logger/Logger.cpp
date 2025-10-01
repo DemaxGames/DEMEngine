@@ -14,6 +14,7 @@ Logger* Logger::get(){
 
 void Logger::fileLog(const std::string& msg, const std::string& filepath){
     file << msg << '\n';
+    file.flush();
 }
 
 void Logger::log(const std::string& msg){

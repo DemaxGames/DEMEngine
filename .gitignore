@@ -49,3 +49,5 @@ log.txt
 #cmake files
 d
 build
+#libs
+lib/*
