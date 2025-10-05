@@ -4,6 +4,7 @@
 #include "glfw/glfw3.h"
 
 #include "core/Logger/Logger.h"
+#include "core/math/vec.h"
 
 namespace dem{
 namespace Renderer{
@@ -11,9 +12,10 @@ namespace Renderer{
     class VertexBuffer{
     public:
         GLuint gl;
-        float* verticies;
+        math::vec3* verticies;
         size_t size;
         VertexBuffer(float* verticies, size_t size);
+        VertexBuffer(math::vec3* verticies, size_t size);
     };
 }
 }

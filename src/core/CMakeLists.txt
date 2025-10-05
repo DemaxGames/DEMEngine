@@ -4,6 +4,13 @@ include_directories("../../include")
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 set(SRC_FILES
+    Engine/Object.cpp
+    math/mat2.cpp
+    math/mat3.cpp
+    math/mat4.cpp
+    math/vec2.cpp
+    math/vec3.cpp
+    math/vec4.cpp
     Logger/Logger.cpp
     Renderer/GLProgram.cpp
     Renderer/Renderer.cpp

@@ -9,6 +9,7 @@
 #include "core/Renderer/Shader.h"
 #include "core/Renderer/VertexArray.h"
 #include "core/Renderer/VertexBuffer.h"
+#include "core/math/vec.h"
 
 namespace dem{
 namespace Renderer{
@@ -20,7 +21,7 @@ std::vector<dem::Renderer::VertexBuffer> vertexBuffers;
 
 int Init(int width, int height);
 int LoadScene(dem::Scene scene);
-int Render();
+int Render(dem::Scene scene);
 
 
 }

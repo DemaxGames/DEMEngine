@@ -44,7 +44,7 @@ int dem::Renderer::LoadScene(dem::Scene scene){
     return 0;
 }
 
-int dem::Renderer::Render(){
+int dem::Renderer::Render(dem::Scene scene){
 
     glClear(GL_COLOR_BUFFER_BIT);
     
@@ -52,6 +52,7 @@ int dem::Renderer::Render(){
         vertexArray->CreateVertexAttribPointer(*program);
         glUseProgram(program->gl);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[i].gl);
+        glUniformMatrix4fv(program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)&scene.objects[i].projection.data[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
