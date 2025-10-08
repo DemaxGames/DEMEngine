@@ -1,11 +1,11 @@
 #include "core/Renderer/Render.h"
 
+namespace dem{
 
-
-int dem::Renderer::Init(int width, int height){
+int Renderer::Init(int width, int height){
     Logger::get()->log("Initializing Renderer");
 
-    dem::Logger* logger = dem::Logger::get();
+    Logger* logger = Logger::get();
 
     if(glfwInit()) logger->log("GLFW Initialized");
     else {
@@ -23,28 +23,28 @@ int dem::Renderer::Init(int width, int height){
     return 0;
 }
 
-int dem::Renderer::LoadScene(dem::Scene scene){
+int Renderer::LoadScene(Scene scene){
     Logger::get()->log("Loading scene");
 
     vertexBuffers.clear();
 
-    for(dem::Object object : scene.objects){
-        vertexBuffers.push_back(dem::Renderer::VertexBuffer(object.mesh.verticies.data(), object.mesh.verticies.size()));
+    for(Object object : scene.objects){
+        vertexBuffers.push_back(Renderer::VertexBuffer(object.mesh.verticies.data(), object.mesh.verticies.size()));
     }
 
-    dem::Renderer::Shader* vertex_shader = new dem::Renderer::Shader("shader.vert", GL_VERTEX_SHADER);
+    Renderer::Shader* vertex_shader = new Renderer::Shader("shader.vert", GL_VERTEX_SHADER);
     vertex_shader->Compile();
-    dem::Renderer::Shader* fragment_shader = new dem::Renderer::Shader("shader.frag", GL_FRAGMENT_SHADER);
+    Renderer::Shader* fragment_shader = new Renderer::Shader("shader.frag", GL_FRAGMENT_SHADER);
     fragment_shader->Compile();
-    program = new dem::Renderer::GLProgram(vertex_shader, fragment_shader);
+    program = new Renderer::GLProgram(vertex_shader, fragment_shader);
     program->Link();
 
-    vertexArray = new dem::Renderer::VertexArray();
+    vertexArray = new Renderer::VertexArray();
 
     return 0;
 }
 
-int dem::Renderer::Render(dem::Scene scene){
+int Renderer::Render(Scene scene){
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -60,4 +60,5 @@ int dem::Renderer::Render(dem::Scene scene){
     glfwPollEvents();
 
     return glfwWindowShouldClose(window);
+}
 }

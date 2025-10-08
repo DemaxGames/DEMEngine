@@ -1,10 +1,12 @@
 #include "core/Renderer/Shader.h"
 
-dem::Renderer::Shader::Shader(const char* string, GLenum shaderType){
+namespace dem{
+
+Renderer::Shader::Shader(const char* string, GLenum shaderType){
     Logger::get()->log("Creating Shader");
     if(string != NULL) sourceFile = string;
     else{
-        dem::Logger::get()->log("ERROR: source file is NULL");
+        Logger::get()->log("ERROR: source file is NULL");
         return;
     }
 
@@ -13,13 +15,13 @@ dem::Renderer::Shader::Shader(const char* string, GLenum shaderType){
     compiled = false;
 }
 
-int dem::Renderer::Shader::Compile(){
+int Renderer::Shader::Compile(){
     Logger::get()->log("Compiling shader");
 
     FILE* file = fopen(sourceFile.data(), "r");
     if(file == NULL){
-        dem::Logger::get()->log("ERROR: cannot find file:");
-        dem::Logger::get()->log(sourceFile);
+        Logger::get()->log("ERROR: cannot find file:");
+        Logger::get()->log(sourceFile);
         return -1;
     }
     char* src = new char[std::filesystem::file_size(sourceFile)];
@@ -30,15 +32,16 @@ int dem::Renderer::Shader::Compile(){
     GLint status;
     glGetShaderiv(gl, GL_COMPILE_STATUS, &status);
     if(status == GL_FALSE){
-        dem::Logger::get()->log("ERROR: compilation failed in file shader.vert");
+        Logger::get()->log("ERROR: compilation failed in file shader.vert");
         GLint log_length;
         glGetShaderiv(gl, GL_INFO_LOG_LENGTH, &log_length);
         char* log = new char[log_length];
         glGetShaderInfoLog(gl, log_length, NULL, log);
-        dem::Logger::get()->log(log);
+        Logger::get()->log(log);
         return -1;
     }
     compiled = true;
 
     return 0;
+}
 }

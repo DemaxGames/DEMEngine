@@ -1,16 +1,18 @@
 #include "core/Renderer/VertexBuffer.h"
 
-dem::Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
+namespace dem{
+
+Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
     Logger::get()->log("Creating Vertex Buffer");
 
-    if(verticies != NULL) this->verticies = (dem::math::vec3*)(verticies);
+    if(verticies != NULL) this->verticies = (math::vec3*)(verticies);
     else{
-        dem::Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
+        Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
     }
     if(size != 0) this->size = size;
     else{
-        dem::Logger::get()->log("ERROR: Cannot create Vertex Buffer, size is 0");
+        Logger::get()->log("ERROR: Cannot create Vertex Buffer, size is 0");
         return;
     }
     
@@ -19,21 +21,22 @@ dem::Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->size, this->verticies, GL_STATIC_DRAW);
 }
 
-dem::Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
+Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
     Logger::get()->log("Creating Vertex Buffer");
 
     if(verticies != NULL) this->verticies = verticies;
     else{
-        dem::Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
+        Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
     }
     if(size != 0) this->size = size * 3;
     else{
-        dem::Logger::get()->log("ERROR: Cannot create Vertex Buffer, size is 0");
+        Logger::get()->log("ERROR: Cannot create Vertex Buffer, size is 0");
         return;
     }
     
     glGenBuffers(1, &gl);
     glBindBuffer(GL_ARRAY_BUFFER, gl);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(dem::math::vec3) * this->size, this->verticies, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(math::vec3) * this->size, this->verticies, GL_STATIC_DRAW);
+}
 }

@@ -1,5 +1,6 @@
 #include "core/Logger/Logger.h"
 
+
 namespace dem{
 
 Logger::Logger(){

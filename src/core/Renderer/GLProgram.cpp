@@ -1,13 +1,15 @@
 #include "core/Renderer/GLProgram.h"
 
-dem::Renderer::GLProgram::GLProgram(){
+namespace dem{
+
+Renderer::GLProgram::GLProgram(){
     Logger::get()->log("Creating program");
 
     gl = glCreateProgram();
     linked = false;
 }
 
-dem::Renderer::GLProgram::GLProgram(Shader* vertexShader, Shader* fragmentShader){
+Renderer::GLProgram::GLProgram(Shader* vertexShader, Shader* fragmentShader){
     Logger::get()->log("Creating program");
     
     gl = glCreateProgram();
@@ -16,7 +18,7 @@ dem::Renderer::GLProgram::GLProgram(Shader* vertexShader, Shader* fragmentShader
     fragment = fragmentShader;
 }
 
-int dem::Renderer::GLProgram::Link(){
+int Renderer::GLProgram::Link(){
     Logger::get()->log("Linking program");
     if(vertex->compiled == true) glAttachShader(gl, vertex->gl);
     else Logger::get()->log("ERROR: vertex shader is not compiled, but you trying to link the program with him");
@@ -32,4 +34,5 @@ int dem::Renderer::GLProgram::Link(){
     float_time_location = glGetUniformLocation(gl, "time");
 
     return 0;
+}
 }
