@@ -2,6 +2,9 @@
 
 #include <vector>
 #include "core/Engine/Scene.h"
+#include "core/Engine/Object.h"
+#include "core/Engine/Mesh.h"
+#include "core/Engine/Camera.h"
 #include "glad/glad.h"
 #include "glfw/glfw3.h"
 #include "core/Logger/Logger.h"

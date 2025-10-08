@@ -35,20 +35,24 @@ int main(){
     objects[1].mesh = meshes[1];
     objects[2].mesh = meshes[2];
 
-    objects[0].projection.projection(1280.f/720.f, 3.1415f/3, 0.05f, 200.f);
-    objects[1].projection.projection(1280.f/720.f, 3.1415f/3, 0.05f, 200.f);
-    objects[2].projection.projection(1280.f/720.f, 3.1415f/3, 0.05f, 200.f);
+    dem::Camera* cam = new dem::Camera();
+    float fov = 4.f;
+    cam->projection.projection(1280.f/720.f, 3.14f/fov, 0.1f, 200.f);
 
     dem::Scene scene;
     scene.objects.push_back(objects[0]);
     scene.objects.push_back(objects[1]);
     scene.objects.push_back(objects[2]);
 
+    scene.camera = cam;
+
     dem::Renderer::Init(1280, 720);
     dem::Renderer::LoadScene(scene);
 
     int frameCounter = 0;
     while(!dem::Renderer::Render(scene)){
+        cam->projection.projection(1280.f/720.f, 3.14f/fov, 0.1f, 200.f);
+        fov-=0.01f;
         frameCounter++;
     }
 

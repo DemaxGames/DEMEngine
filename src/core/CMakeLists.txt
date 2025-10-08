@@ -5,6 +5,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 set(SRC_FILES
     Engine/Object.cpp
+    Engine/Camera.cpp
     math/mat2.cpp
     math/mat3.cpp
     math/mat4.cpp

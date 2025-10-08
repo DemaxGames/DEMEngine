@@ -7,9 +7,7 @@ namespace dem{
 
 class Object{
 public:
-    dem::Mesh mesh;
-    dem::math::mat4 projection;
-
+    Mesh mesh;    
     Object();
 };
 }
