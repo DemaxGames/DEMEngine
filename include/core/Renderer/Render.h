@@ -16,10 +16,10 @@
 
 namespace dem{
 namespace Renderer{
-GLFWwindow* window;
-dem::Renderer::GLProgram* program;
-dem::Renderer::VertexArray* vertexArray;
-std::vector<dem::Renderer::VertexBuffer> vertexBuffers;
+extern GLFWwindow* window;
+extern dem::Renderer::GLProgram* program;
+extern dem::Renderer::VertexArray* vertexArray;
+extern std::vector<dem::Renderer::VertexBuffer> vertexBuffers;
 
 
 int Init(int width, int height);

@@ -2,6 +2,11 @@
 
 namespace dem{
 
+GLFWwindow* Renderer::window = NULL;
+dem::Renderer::GLProgram* Renderer::program = NULL;
+dem::Renderer::VertexArray* Renderer::vertexArray = NULL;
+std::vector<dem::Renderer::VertexBuffer> Renderer::vertexBuffers = std::vector<dem::Renderer::VertexBuffer>();
+
 int Renderer::Init(int width, int height){
     Logger::get()->log("Initializing Renderer");
 
@@ -45,6 +50,9 @@ int Renderer::LoadScene(Scene scene){
 }
 
 int Renderer::Render(Scene scene){
+    math::mat4 projection = scene.camera->GetProjectionMatrix();
+    math::mat4 model_matrix;
+    math::mat4 view_matrix = scene.camera->GetModelMatrix();
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -52,7 +60,10 @@ int Renderer::Render(Scene scene){
         vertexArray->CreateVertexAttribPointer(*program);
         glUseProgram(program->gl);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[i].gl);
-        glUniformMatrix4fv(program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)scene.camera->projection.data);
+        glUniformMatrix4fv(program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
+        glUniformMatrix4fv(program->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
+        model_matrix = scene.objects[i].GetModelMatrix();
+        glUniformMatrix4fv(program->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 

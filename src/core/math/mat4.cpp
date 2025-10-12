@@ -56,10 +56,10 @@ math::vec4 math::mat4::operator*(const math::vec4& b){
 }
 
 math::mat4& math::mat4::operator=(const math::mat4& b){
-    v1 = b[0];
-    v2 = b[1];
-    v3 = b[2];
-    v4 = b[3];
+    data[0] = b[0];
+    data[1] = b[1];
+    data[2] = b[2];
+    data[3] = b[3];
     return *this;
 }
 

@@ -3,71 +3,71 @@
 namespace dem{
 
 math::vec3::vec3(){
-    X = 0;
-    Y = 0;
-    Z = 0;
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = 0;
 }
 
 math::vec3::vec3(float a, float b, float c){
-    X = a;
-    Y = b;
-    Z = c;
+    data[0] = a;
+    data[1] = b;
+    data[2] = c;
 }
 
 
 math::vec3 math::vec3::operator-(const math::vec3& b){
-    math::vec3 c(X - b.X, Y - b.Y, Z - b.Z);
+    math::vec3 c(data[0] - b.data[0], data[1] - b.data[1], data[2] - b.data[2]);
     return c;
 }
 
 math::vec3 math::vec3::operator+(const math::vec3& b){
-    math::vec3 c(X + b.X, Y + b.Y, Z + b.Z);
+    math::vec3 c(data[0] + b.data[0], data[1] + b.data[1], data[2] + b.data[2]);
     return c;
 }
 
 math::vec3& math::vec3::operator=(const math::vec3& b){
-    X = b.X;
-    Y = b.Y;
-    Z = b.Z;
+    data[0] = b.data[0];
+    data[1] = b.data[1];
+    data[2] = b.data[2];
     return *this;
 }
 
 math::vec3 math::vec3::operator*(const float b){
-    math::vec3 c(X * b, Y * b, Z * b);
+    math::vec3 c(data[0] * b, data[1] * b, data[2] * b);
     return c;
 }
 
 math::vec3 math::vec3::operator/(const float b){
-    math::vec3 c(X / b, Y / b, Z / b);
+    math::vec3 c(data[0] / b, data[1] / b, data[2] / b);
     return c;
 }
 
 
 math::vec3& math::vec3::operator+=(const math::vec3& b){
-    X += b.X;
-    Y += b.Y;
-    Z += b.Z;
+    data[0] += b.data[0];
+    data[1] += b.data[1];
+    data[2] += b.data[2];
     return *this;
 }
 
 math::vec3& math::vec3::operator-=(const math::vec3& b){
-    X -= b.X;
-    Y -= b.Y;
-    Z -= b.Z;
+    data[0] -= b.data[0];
+    data[1] -= b.data[1];
+    data[2] -= b.data[2];
     return *this;
 }
 
 math::vec3& math::vec3::operator*=(const float b){
-    X *= b;
-    Y *= b;
-    Z *= b;
+    data[0] *= b;
+    data[1] *= b;
+    data[2] *= b;
     return *this;
 }
 
 math::vec3& math::vec3::operator/=(const float b){
-    X /= b;
-    Y /= b;
-    Z /= b;
+    data[0] /= b;
+    data[1] /= b;
+    data[2] /= b;
     return *this;
 }
 

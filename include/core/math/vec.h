@@ -9,10 +9,7 @@ namespace math{
 class vec2{
 public:
     float data[2];
-
-    #define X data[0]
-    #define Y data[1]
-
+    
     vec2();
     vec2(float a, float b);
 
@@ -34,10 +31,6 @@ public:
 class vec3{
 public:
     float data[3];
-
-    #define X data[0]
-    #define Y data[1]
-    #define Z data[2]
 
     vec3();
     vec3(float a, float b, float c);
@@ -61,11 +54,6 @@ class vec4{
 public:
     float data[4];
 
-    #define X data[0]
-    #define Y data[1]
-    #define Z data[2]
-    #define W data[3]
-
     vec4();
     vec4(float a, float b, float c, float d);
 
@@ -83,6 +71,14 @@ public:
     float& operator[](size_t index);
     const float& operator[](size_t index) const;
 };
+
+float dot(vec2 a, vec2 b);
+float dot(vec3 a, vec3 b);
+float dot(vec4 a, vec4 b);
+
+vec2 normalize(vec2 a);
+vec3 normalize(vec3 a);
+vec4 normalize(vec4 a);
 
 }
 }

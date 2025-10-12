@@ -3,78 +3,78 @@
 namespace dem{
 
 math::vec4::vec4(){
-    X = 0;
-    Y = 0;
-    Z = 0;
-    W = 0;
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = 0;
+    data[3] = 0;
 }
 
 math::vec4::vec4(float a, float b, float c, float d){
-    X = a;
-    Y = b;
-    Z = c;
-    W = d;
+    data[0] = a;
+    data[1] = b;
+    data[2] = c;
+    data[3] = d;
 }
 
 
 math::vec4 math::vec4::operator-(const math::vec4& b){
-    math::vec4 c(X - b.X, Y - b.Y, Z - b.Z, W - b.W);
+    math::vec4 c(data[0] - b.data[0], data[1] - b.data[1], data[2] - b.data[2], data[3] - b.data[3]);
     return c;
 }
 
 math::vec4 math::vec4::operator+(const math::vec4& b){
-    math::vec4 c(X + b.X, Y + b.Y, Z + b.Z, W - b.W);
+    math::vec4 c(data[0] + b.data[0], data[1] + b.data[1], data[2] + b.data[2], data[3] - b.data[3]);
     return c;
 }
 
 math::vec4& math::vec4::operator=(const math::vec4& b){
-    X = b.X;
-    Y = b.Y;
-    Z = b.Z;
-    W = b.W;
+    data[0] = b.data[0];
+    data[1] = b.data[1];
+    data[2] = b.data[2];
+    data[3] = b.data[3];
     return *this;
 }
 
 math::vec4 math::vec4::operator*(const float b){
-    math::vec4 c(X * b, Y * b, Z * b, W * b);
+    math::vec4 c(data[0] * b, data[1] * b, data[2] * b, data[3] * b);
     return c;
 }
 
 math::vec4 math::vec4::operator/(const float b){
-    math::vec4 c(X / b, Y / b, Z / b, W / b);
+    math::vec4 c(data[0] / b, data[1] / b, data[2] / b, data[3] / b);
     return c;
 }
 
 
 math::vec4& math::vec4::operator+=(const math::vec4& b){
-    X += b.X;
-    Y += b.Y;
-    Z += b.Z;
-    W += b.W;
+    data[0] += b.data[0];
+    data[1] += b.data[1];
+    data[2] += b.data[2];
+    data[3] += b.data[3];
     return *this;
 }
 
 math::vec4& math::vec4::operator-=(const math::vec4& b){
-    X -= b.X;
-    Y -= b.Y;
-    Z -= b.Z;
-    W -= b.W;
+    data[0] -= b.data[0];
+    data[1] -= b.data[1];
+    data[2] -= b.data[2];
+    data[3] -= b.data[3];
     return *this;
 }
 
 math::vec4& math::vec4::operator*=(const float b){
-    X *= b;
-    Y *= b;
-    Z *= b;
-    W *= b;
+    data[0] *= b;
+    data[1] *= b;
+    data[2] *= b;
+    data[3] *= b;
     return *this;
 }
 
 math::vec4& math::vec4::operator/=(const float b){
-    X /= b;
-    Y /= b;
-    Z /= b;
-    W /= b;
+    data[0] /= b;
+    data[1] /= b;
+    data[2] /= b;
+    data[3] /= b;
     return *this;
 }
 

@@ -3,64 +3,64 @@
 namespace dem{
 
 math::vec2::vec2(){
-    X = 0;
-    Y = 0;
+    data[0] = 0;
+    data[1] = 0;
 }
 
 math::vec2::vec2(float a, float b){
-    X = a;
-    Y = b;
+    data[0] = a;
+    data[1] = b;
 }
 
 
 math::vec2 math::vec2::operator-(const math::vec2& b){
-    math::vec2 c(X - b.X, Y - b.Y);
+    math::vec2 c(data[0] - b.data[0], data[1] - b.data[1]);
     return c;
 }
 
 math::vec2 math::vec2::operator+(const math::vec2& b){
-    math::vec2 c(X + b.X, Y + b.Y);
+    math::vec2 c(data[0] + b.data[0], data[1] + b.data[1]);
     return c;
 }
 
 math::vec2& math::vec2::operator=(const math::vec2& b){
-    X = b.X;
-    Y = b.Y;
+    data[0] = b.data[0];
+    data[1] = b.data[1];
     return *this;
 }
 
 math::vec2 math::vec2::operator*(const float b){
-    math::vec2 c(X * b, Y * b);
+    math::vec2 c(data[0] * b, data[1] * b);
     return c;
 }
 
 math::vec2 math::vec2::operator/(const float b){
-    math::vec2 c(X / b, Y / b);
+    math::vec2 c(data[0] / b, data[1] / b);
     return c;
 }
 
 
 math::vec2& math::vec2::operator+=(const math::vec2& b){
-    X += b.X;
-    Y += b.Y;
+    data[0] += b.data[0];
+    data[1] += b.data[1];
     return *this;
 }
 
 math::vec2& math::vec2::operator-=(const math::vec2& b){
-    X -= b.X;
-    Y -= b.Y;
+    data[0] -= b.data[0];
+    data[1] -= b.data[1];
     return *this;
 }
 
 math::vec2& math::vec2::operator*=(const float b){
-    X *= b;
-    Y *= b;
+    data[0] *= b;
+    data[1] *= b;
     return *this;
 }
 
 math::vec2& math::vec2::operator/=(const float b){
-    X /= b;
-    Y /= b;
+    data[0] /= b;
+    data[1] /= b;
     return *this;
 }
 
