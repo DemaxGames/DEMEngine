@@ -1,0 +1,9 @@
+# Blender 4.5.3 LTS
+# www.blender.org
+mtllib doritos.mtl
+o Plane
+v 1.160766 -0.807810 -0.008117
+v -1.160766 0.807810 0.008117
+v 0.806955 1.158752 0.078216
+s 0
+f 1 2 3

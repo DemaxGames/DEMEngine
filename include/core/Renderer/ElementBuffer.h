@@ -9,14 +9,13 @@
 namespace dem{
 namespace Renderer{
 
-    class VertexBuffer{
+    class ElementBuffer{
     public:
         GLuint gl;
-        float* verticies;
+        unsigned int* indicies;
         size_t size;
-        VertexBuffer();
-        VertexBuffer(float* verticies, size_t size);
-        VertexBuffer(math::vec3* verticies, size_t size);
+        ElementBuffer();
+        ElementBuffer(unsigned int* indicies, size_t size);
     };
 }
 }

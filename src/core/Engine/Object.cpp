@@ -5,8 +5,8 @@
 
 namespace dem{
 
-Object::Object(){
-    mesh.verticies = std::vector<math::vec3>();
+Object::Object(Mesh* pMesh){
+    mesh = pMesh;
     math::vec3 position = math::vec3(0.0f, 0.0f, 0.0f);
     math::vec3 rotation = math::vec3(0.0f, 0.0f, 0.0f);
     math::vec3 scale = math::vec3(1.0f, 1.0f, 1.0f);

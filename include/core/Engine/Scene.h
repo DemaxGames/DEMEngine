@@ -7,7 +7,7 @@ namespace dem{
 
 class Scene{
 public:
-    std::vector<Object> objects;
+    std::vector<Object*> objects;
     Camera* camera;
 };
 }

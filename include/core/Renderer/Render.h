@@ -12,19 +12,18 @@
 #include "core/Renderer/Shader.h"
 #include "core/Renderer/VertexArray.h"
 #include "core/Renderer/VertexBuffer.h"
+#include "core/Renderer/ElementBuffer.h"
 #include "core/math/vec.h"
 
 namespace dem{
 namespace Renderer{
 extern GLFWwindow* window;
 extern dem::Renderer::GLProgram* program;
-extern dem::Renderer::VertexArray* vertexArray;
-extern std::vector<dem::Renderer::VertexBuffer> vertexBuffers;
 
 
 int Init(int width, int height);
-int LoadScene(dem::Scene scene);
-int Render(dem::Scene scene);
+int LoadScene(dem::Scene& scene);
+int Render(dem::Scene& scene);
 
 
 }

@@ -2,10 +2,14 @@
 
 namespace dem{
 
+Renderer::VertexBuffer::VertexBuffer(){
+
+}
+
 Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
     Logger::get()->log("Creating Vertex Buffer");
 
-    if(verticies != NULL) this->verticies = (math::vec3*)(verticies);
+    if(verticies != NULL) this->verticies = verticies;
     else{
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
@@ -24,7 +28,7 @@ Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
 Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
     Logger::get()->log("Creating Vertex Buffer");
 
-    if(verticies != NULL) this->verticies = verticies;
+    if(verticies != NULL) this->verticies = (float*)verticies;
     else{
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
@@ -37,6 +41,6 @@ Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
     
     glGenBuffers(1, &gl);
     glBindBuffer(GL_ARRAY_BUFFER, gl);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(math::vec3) * this->size, this->verticies, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->size * 3, this->verticies, GL_STATIC_DRAW);
 }
 }

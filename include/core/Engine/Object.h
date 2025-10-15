@@ -7,13 +7,13 @@ namespace dem{
 
 class Object{
 public:
-    Mesh mesh;
+    Mesh* mesh;
     math::mat4 model_matrix;
     math::vec3 position;
     math::vec3 rotation;
     math::vec3 scale;
     
-    Object();
+    Object(Mesh* mesh = NULL);
     math::mat4 GetModelMatrix();
 };
 }

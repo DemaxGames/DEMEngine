@@ -12,42 +12,32 @@
 #include <filesystem>
 #include <vector>
 
-std::vector<dem::math::vec3> verticies {
-    dem::math::vec3(0.f, 0.05f, 0.f),
-    dem::math::vec3(-0.053f, -0.01, 0.f),
-    dem::math::vec3(0.045, -0.03, 0.f)
-};
 
 int main(){
     dem::Logger* logger = dem::Logger::get();
-
-    dem::Mesh meshes[3];
-    meshes[0].verticies = verticies;
-    meshes[1].verticies = verticies;
-    meshes[2].verticies = verticies;
-
-    dem::Object objects[3];
-    objects[0].mesh = meshes[0];
-    objects[1].mesh = meshes[1];
-    objects[2].mesh = meshes[2];
-
-    objects[0].position = dem::math::vec3(0.5f, 0.2f, -0.4f);
-    objects[1].position = dem::math::vec3(-0.5f, -0.25f, -0.5f);
-    objects[2].position = dem::math::vec3(0.0f, 0.0f, -0.4f);
     
-
+    dem::Mesh* mesh = new dem::Mesh();
+    mesh->Load("examples/cube.obj");
+    
+    dem::Object* object = new dem::Object(mesh);
+    object->position = dem::math::vec3(0.5f, 0.0f, -15.4f);
+    
+    dem::Mesh* doritosMesh = new dem::Mesh();
+    doritosMesh->Load("examples/doritos.obj");
+    
+    dem::Object* doritos = new dem::Object(doritosMesh);
+    doritos->position = dem::math::vec3(-2.5f, 0.0f, -0.4f);
+    
     dem::Camera* cam = new dem::Camera();
     cam->nearClip = 0.005f;
     cam->fov = 3.14/1.7f;
-
-    dem::Scene scene;
-    scene.objects.push_back(objects[0]);
-    scene.objects.push_back(objects[1]);
-    scene.objects.push_back(objects[2]);
-
-    scene.camera = cam;
     
-    dem::Renderer::Init(1280, 720);
+    dem::Scene scene;
+    scene.camera = cam;
+    scene.objects.push_back(object);
+    scene.objects.push_back(doritos);
+    
+    dem::Renderer::Init(1920, 1080);
     dem::Renderer::LoadScene(scene);
     
     dem::Input::Init();
@@ -66,19 +56,15 @@ int main(){
         if(dem::Input::GetKey(dem::KeyCode::A)) cam->position += cam->right * -1.5f * deltaTime;
         if(dem::Input::GetKey(dem::KeyCode::D)) cam->position += cam->right * 1.5f * deltaTime;
 
-        scene.objects[0].rotation = dem::math::vec3((float)frameCounter / 100.f, 0.f, 0.f);
-        scene.objects[1].rotation = dem::math::vec3(0.0f, (float)frameCounter / 100.f, 0.f);
-        scene.objects[2].rotation = dem::math::vec3(0.f, 0.f, (float)frameCounter / 100.f);
+        object->rotation = object->rotation + dem::math::vec3((float) deltaTime * 0.09f, 0.f, 0.f);
 
         dem::Input::Update();
         dem::Time::Update();
         deltaTime = dem::Time::GetDeltaTime();
-        std::cout << "\rfps: " << 1.f / deltaTime;
+        //std::cout << "\rfps: " << 1.f / deltaTime;
     }
 
     logger->log("Total frames generated: ", frameCounter);
 
     return 0;
 }
-
-

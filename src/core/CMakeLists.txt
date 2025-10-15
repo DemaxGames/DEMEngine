@@ -5,6 +5,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 set(SRC_FILES
     Engine/Camera.cpp
+    Engine/Mesh.cpp
     Engine/Object.cpp
     InputSystem/Input.cpp
     math/dot.cpp
@@ -16,6 +17,7 @@ set(SRC_FILES
     math/vec3.cpp
     math/vec4.cpp
     Logger/Logger.cpp
+    Renderer/ElementBuffer.cpp
     Renderer/GLProgram.cpp
     Renderer/Renderer.cpp
     Renderer/Shader.cpp
