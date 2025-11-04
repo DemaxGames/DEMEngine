@@ -40,10 +40,12 @@ int Renderer::LoadScene(Scene& scene){
 
     for(int i = 0; i < scene.objects.size(); i++){
         scene.objects[i]->mesh->VAO.program = program;
-        scene.objects[i]->mesh->VAO.VBO = Renderer::VertexBuffer(scene.objects[i]->mesh->verticies, scene.objects[i]->mesh->verticies_count * 3);
-        if(scene.objects[i]->mesh->drawElementsSupport) 
-            scene.objects[i]->mesh->VAO.EBO = Renderer::ElementBuffer(scene.objects[i]->mesh->indicies, scene.objects[i]->mesh->indicies_count * 3);
+        scene.objects[i]->mesh->VAO.VBO = scene.objects[i]->mesh->GetVBO();
         scene.objects[i]->mesh->VAO.BindAll();
+        // for(int j = 0; i < scene.objects[i]->mesh->VAO.VBO.verticies_size; j += 3){
+        //     std::cout << scene.objects[i]->mesh->VAO.VBO.verticies[j] << ' ' << scene.objects[i]->mesh->VAO.VBO.verticies[j+1] << ' ' << scene.objects[i]->mesh->VAO.VBO.verticies[j+ 2] << '\n';
+        // }
+        // std::cout << '\n';
     }
 
     return 0;
@@ -59,19 +61,14 @@ int Renderer::Render(Scene& scene){
     glUniformMatrix4fv(program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
     glUniformMatrix4fv(program->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
 
-    for(int i = 0; i < scene.objects.size(); i++){
+
+    for(int i = 0; i < scene.objects.size(); i++){ 
         glUseProgram(program->gl);
-        
         model_matrix = scene.objects[i]->GetModelMatrix();
-        
+          
         glUniformMatrix4fv(program->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
         glBindVertexArray(scene.objects[i]->mesh->VAO.gl);
-        if(scene.objects[i]->mesh->drawElementsSupport){
-            glDrawElements(GL_TRIANGLES, scene.objects[i]->mesh->VAO.EBO.size, GL_UNSIGNED_INT, NULL);
-        }
-        else {
-            glDrawArrays(GL_TRIANGLES, 0, scene.objects[i]->mesh->VAO.VBO.size / 3);
-        }
+        glDrawArrays(GL_TRIANGLES, 0, scene.objects[i]->mesh->VAO.VBO.verticies_size / 3);
     }
 
     glfwSwapBuffers(window);

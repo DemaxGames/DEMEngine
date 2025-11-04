@@ -80,5 +80,7 @@ vec2 normalize(vec2 a);
 vec3 normalize(vec3 a);
 vec4 normalize(vec4 a);
 
+vec3 normal(vec3 a, vec3 b);
+
 }
 }

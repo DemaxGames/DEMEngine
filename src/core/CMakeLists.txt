@@ -12,6 +12,7 @@ set(SRC_FILES
     math/mat2.cpp
     math/mat3.cpp
     math/mat4.cpp
+    math/normal.cpp
     math/normalize.cpp
     math/vec2.cpp
     math/vec3.cpp

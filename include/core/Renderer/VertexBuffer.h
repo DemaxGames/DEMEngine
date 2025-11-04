@@ -8,15 +8,23 @@
 
 namespace dem{
 namespace Renderer{
+    
+class VertexBuffer{
+public:
+    GLuint gl;
+    float* data;
+    size_t data_size;
 
-    class VertexBuffer{
-    public:
-        GLuint gl;
-        float* verticies;
-        size_t size;
-        VertexBuffer();
-        VertexBuffer(float* verticies, size_t size);
-        VertexBuffer(math::vec3* verticies, size_t size);
-    };
+    float* verticies;
+    size_t verticies_size;
+
+    float* normals;
+    size_t normals_size;
+
+    VertexBuffer();
+    VertexBuffer(float* verticies, size_t size);
+    VertexBuffer(math::vec3* verticies, size_t size);
+};
+
 }
 }

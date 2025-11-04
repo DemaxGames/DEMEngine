@@ -28,6 +28,7 @@ int Renderer::GLProgram::Link(){
     linked = true;
 
     vec3_vpos_location = glGetAttribLocation(gl, "vPos");
+    vec3_normal_location = glGetAttribLocation(gl, "normal");
     mat4_model_location = glGetUniformLocation(gl, "model");
     mat4_view_location = glGetUniformLocation(gl, "view");
     mat4_projection_location = glGetUniformLocation(gl, "projection");

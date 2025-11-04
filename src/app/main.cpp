@@ -24,7 +24,7 @@ int main(){
     
     dem::Mesh* doritosMesh = new dem::Mesh();
     doritosMesh->Load("examples/doritos.obj");
-    
+
     dem::Object* doritos = new dem::Object(doritosMesh);
     doritos->position = dem::math::vec3(-2.5f, 0.0f, -0.4f);
     
@@ -39,7 +39,7 @@ int main(){
     
     dem::Renderer::Init(1920, 1080);
     dem::Renderer::LoadScene(scene);
-    
+
     dem::Input::Init();
     dem::Input::sensivity = 3.f;
 

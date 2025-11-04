@@ -14,7 +14,7 @@ Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
     }
-    if(size != 0) this->size = size;
+    if(size != 0) verticies_size = size;
     else{
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, size is 0");
         return;
@@ -22,7 +22,7 @@ Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
     
     glGenBuffers(1, &gl);
     glBindBuffer(GL_ARRAY_BUFFER, gl);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->size, this->verticies, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticies_size, this->verticies, GL_STATIC_DRAW);
 }
 
 Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
@@ -33,7 +33,7 @@ Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
     }
-    if(size != 0) this->size = size * 3;
+    if(size != 0) verticies_size = size * 3;
     else{
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, size is 0");
         return;
@@ -41,6 +41,7 @@ Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
     
     glGenBuffers(1, &gl);
     glBindBuffer(GL_ARRAY_BUFFER, gl);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->size * 3, this->verticies, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticies_size, this->verticies, GL_STATIC_DRAW);
 }
+
 }
