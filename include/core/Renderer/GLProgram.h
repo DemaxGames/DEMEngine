@@ -23,7 +23,7 @@ public:
     GLint mat4_view_location;
     GLint mat4_model_location;
     GLint float_time_location;
-
+    GLint sampler2D_tex;
 
     GLProgram();
     GLProgram(Shader* vertexShader, Shader* fragmentShader);

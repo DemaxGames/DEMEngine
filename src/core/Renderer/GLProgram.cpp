@@ -33,6 +33,7 @@ int Renderer::GLProgram::Link(){
     mat4_view_location = glGetUniformLocation(gl, "view");
     mat4_projection_location = glGetUniformLocation(gl, "projection");
     float_time_location = glGetUniformLocation(gl, "time");
+    sampler2D_tex = glGetUniformLocation(gl, "tex");
 
     return 0;
 }

@@ -5,6 +5,9 @@ namespace dem{
 GLFWwindow* Renderer::window = NULL;
 dem::Renderer::GLProgram* Renderer::program = NULL;
 
+Image* image;
+Renderer::GLImage* glImage;
+
 int Renderer::Init(int width, int height){
     Logger::get()->log("Initializing Renderer");
 
@@ -30,6 +33,10 @@ int Renderer::Init(int width, int height){
 
 int Renderer::LoadScene(Scene& scene){
     Logger::get()->log("Loading scene");
+    
+    image = new dem::Image;
+    image->LoadImage("examples/texture.png");
+    glImage = new GLImage(image);
 
     Renderer::Shader* vertex_shader = new Renderer::Shader("examples/shader.vert", GL_VERTEX_SHADER);
     vertex_shader->Compile();
@@ -60,12 +67,13 @@ int Renderer::Render(Scene& scene){
 
     glUniformMatrix4fv(program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
     glUniformMatrix4fv(program->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
-
+    glUniform1i(program->sampler2D_tex, 0);
+    glBindTexture(GL_TEXTURE_2D, glImage->gl);
 
     for(int i = 0; i < scene.objects.size(); i++){ 
         glUseProgram(program->gl);
         model_matrix = scene.objects[i]->GetModelMatrix();
-          
+        
         glUniformMatrix4fv(program->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
         glBindVertexArray(scene.objects[i]->mesh->VAO.gl);
         glDrawArrays(GL_TRIANGLES, 0, scene.objects[i]->mesh->VAO.VBO.verticies_size / 3);
