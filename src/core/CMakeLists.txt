@@ -3,6 +3,9 @@ project(demengine)
 include_directories("../../include")
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
+set(CMAKE_BUILD_TYPE "Release")
+
+add_compile_options(-g)
 set(SRC_FILES
     Engine/Camera.cpp
     Engine/Image.cpp

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <filesystem>
 #include <vector>
-
+#include <windows.h>
 
 int main(){
     dem::Logger* logger = dem::Logger::get();

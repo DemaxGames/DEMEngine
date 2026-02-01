@@ -20,7 +20,8 @@ void Logger::fileLog(const std::string& msg, const std::string& filepath){
 
 void Logger::log(const std::string& msg){
     char time[80];
-    std::time_t time_raw = std::time(nullptr);
+    std::time_t time_raw;
+    std::time(&time_raw);
     std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
     fileLog(time + msg, "Log.txt");
     std::cout << time << msg << '\n';
