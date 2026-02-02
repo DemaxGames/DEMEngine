@@ -8,12 +8,13 @@
 #include "core/math/vec.h"
 #include "core/math/mat.h"
 #include "core/time/time.h"
+#include "core/math/uid.h"
 #include <stdio.h>
 #include <filesystem>
 #include <vector>
 #include <windows.h>
 
 int main(){
-    
+    for(int i = 0;; i++) GetUID();
     return 0;
 }
