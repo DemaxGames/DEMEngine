@@ -7,6 +7,8 @@ set(CMAKE_BUILD_TYPE "Release")
 
 add_compile_options(-g)
 set(SRC_FILES
+    ECS/ecs.cpp
+    ECS/Entity.cpp
     Engine/Camera.cpp
     Engine/Image.cpp
     Engine/Mesh.cpp

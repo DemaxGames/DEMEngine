@@ -9,12 +9,20 @@
 #include "core/math/mat.h"
 #include "core/time/time.h"
 #include "core/math/uid.h"
+#include "core/ECS/ecs.h"
+#include "core/ECS/Component.h"
 #include <stdio.h>
 #include <filesystem>
 #include <vector>
 #include <windows.h>
 
+class Transform{
+    dem::math::vec3 position;
+};
+
 int main(){
-    for(int i = 0;; i++) GetUID();
+    dem::ecs::RegisterComponent<Transform>();
+    
+
     return 0;
 }

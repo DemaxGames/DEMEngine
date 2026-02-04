@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 
+namespace dem{
+namespace math{
+
 typedef union {
     struct {
         uint32_t num;
@@ -9,3 +12,6 @@ typedef union {
 } uid_t;
 
 uid_t GetUID();
+
+}
+}

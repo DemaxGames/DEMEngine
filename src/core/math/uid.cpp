@@ -5,6 +5,9 @@
 
 uint32_t number;
 
+namespace dem{
+namespace math{
+
 uid_t GetUID(){
     uid_t result{ // so basically we combine time and internal iterator
         .num = ++number,
@@ -12,4 +15,7 @@ uid_t GetUID(){
     };
     //printf("new UID: %016llX(num: %d, time: %d)\n", result, result.num, result.time);
     return result;
+}
+
+}
 }
