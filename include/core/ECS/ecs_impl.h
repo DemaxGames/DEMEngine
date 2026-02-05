@@ -5,7 +5,7 @@ namespace dem{
 namespace ecs{
 
 template<class T> int RegisterComponent(){
-    ComponentPool<T> componentPool;
+    ComponentPool<T>* componentPool = new ComponentPool<T>();
     componentPools.emplace(typeid(T), componentPool);
 
     Logger::get()->log("Component Registered");
