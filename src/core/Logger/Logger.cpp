@@ -52,6 +52,14 @@ void Logger::log(const std::string& msg, const unsigned int a){
     std::cout << time + msg + std::to_string(a) << '\n';
 }
 
+void Logger::log(const std::string& msg, const unsigned long long a){
+    char time[80];
+    std::time_t time_raw = std::time(nullptr);
+    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    fileLog(time + msg + std::to_string(a), "Log.txt");
+    std::cout << time + msg + std::to_string(a) << '\n';
+}
+
 
 void Logger::log(const std::string& msg, const math::vec2& vec){
     char time[80];

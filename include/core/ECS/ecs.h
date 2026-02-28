@@ -8,6 +8,7 @@
 namespace dem{
 namespace ecs{
 extern std::map<std::type_index, IComponentPool*> componentPools;
+extern std::vector<Entity> entities;
 
 void init();
 

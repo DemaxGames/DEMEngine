@@ -8,6 +8,7 @@
 
 namespace dem
 {
+
 class Mesh{
 public:
     std::string name;
@@ -36,5 +37,6 @@ public:
 private:
     void LoadFromObj(std::string path);
 };
+
 }
 

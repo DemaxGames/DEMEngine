@@ -65,6 +65,16 @@ public:
 
     void identity();
     void projection(float aspect, float fov, float near, float far);
+    void rotation(float x, float y, float z);
+    void rotationX(float a);
+    void rotationY(float a);
+    void rotationZ(float a);
+    void position(float x, float y, float z);
+    void scale(float x, float y, float z);
+
+    void rotation(vec3 rotation);
+    void position(vec3 position);
+    void scale(vec3 scale);
 
     mat4 operator*(const mat4& b);
     vec4 operator*(const vec4& b);

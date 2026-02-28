@@ -1,11 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "core/Engine/Scene.h"
 #include "core/Engine/Image.h"
-#include "core/Engine/Object.h"
 #include "core/Engine/Mesh.h"
-#include "core/Engine/Camera.h"
+#include "core/Components/CameraComponent.h"
 #include "glad/glad.h"
 #include "glfw/glfw3.h"
 #include "core/Logger/Logger.h"
@@ -20,12 +18,10 @@
 namespace dem{
 namespace Renderer{
 extern GLFWwindow* window;
-extern dem::Renderer::GLProgram* program;
 
 int Init(int width, int height);
-int LoadScene(dem::Scene& scene);
-int Render(dem::Scene& scene);
-
+int LoadScene();
+int Render();
 
 }
 }

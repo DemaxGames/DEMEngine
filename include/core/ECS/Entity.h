@@ -62,7 +62,6 @@ template<class T> T* Entity::GetComponent(){
         component = &componentPool->componentMap[id];
     }
     else{
-        Logger::get()->log("ERROR: cannot find component in entity");
         return nullptr;
     }
     return component;

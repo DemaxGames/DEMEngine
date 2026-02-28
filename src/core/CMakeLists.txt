@@ -7,12 +7,13 @@ set(CMAKE_BUILD_TYPE "Release")
 
 add_compile_options(-g)
 set(SRC_FILES
+    Components/CameraComponent.cpp
+    Components/MeshRenderer.cpp
+    Components/TransformComponent.cpp
     ECS/ecs.cpp
     ECS/Entity.cpp
-    Engine/Camera.cpp
     Engine/Image.cpp
     Engine/Mesh.cpp
-    Engine/Object.cpp
     InputSystem/Input.cpp
     math/dot.cpp
     math/mat2.cpp
