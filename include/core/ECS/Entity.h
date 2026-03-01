@@ -11,7 +11,7 @@ class Entity{
 public:
     math::uid_t id;
 
-    template<class T> void AddComponent();
+    template<class T> T* AddComponent();
     template<class T> T* GetComponent();
 };
 
@@ -25,14 +25,14 @@ namespace ecs{
 
 extern std::map<std::type_index, IComponentPool*> componentPools;
 
-template<class T> void Entity::AddComponent(){
+template<class T> T* Entity::AddComponent(){
     IComponentPool *genericComponentPool;
     if(componentPools.find(typeid(T)) != componentPools.end()){
         genericComponentPool = componentPools[typeid(T)];
     }
     else{
         Logger::get()->log("ERROR: component is not registered!!!");
-        return;
+        return nullptr;
     }
 
 
@@ -40,10 +40,11 @@ template<class T> void Entity::AddComponent(){
     ComponentPool<T>* componentPool;
     if(!(componentPool = dynamic_cast<ComponentPool<T>*>(genericComponentPool))){
         Logger::get()->log("ERROR cannot cast generic component pool");
-        return; 
+        return nullptr; 
     }
     componentPool->componentMap.emplace(id, component);
 
+    return &componentPool->componentMap[id];
 }
 
 template<class T> T* Entity::GetComponent(){

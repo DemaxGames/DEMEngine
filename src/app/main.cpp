@@ -28,18 +28,15 @@ int main(){
     program->Link();
 
     dem::ecs::Entity player = dem::ecs::CreateEntity();
-    player.AddComponent<dem::TransformComponent>();
-    dem::TransformComponent* playerTransform = player.GetComponent<dem::TransformComponent>();
+    dem::TransformComponent* playerTransform = player.AddComponent<dem::TransformComponent>();
     playerTransform->rotation = dem::math::vec3(0.f, 0.f, 0.f);
     
     dem::ecs::Entity camera = dem::ecs::CreateEntity();
     logger->log("camera id:", (uint64_t)camera.id);
-    camera.AddComponent<dem::TransformComponent>();
-    camera.AddComponent<dem::CameraComponent>();
-    dem::TransformComponent* cameraTransform = camera.GetComponent<dem::TransformComponent>();
+    dem::TransformComponent* cameraTransform = camera.AddComponent<dem::TransformComponent>();
     cameraTransform->parent = player.GetComponent<dem::TransformComponent>();
     
-    dem::CameraComponent* cameraComponent = camera.GetComponent<dem::CameraComponent>();
+    dem::CameraComponent* cameraComponent = camera.AddComponent<dem::CameraComponent>();
     cameraComponent->fov = PI * 1.f / 2.f;
 
     dem::Mesh mesh;
@@ -49,10 +46,8 @@ int main(){
     dem::ecs::Entity entity[20];
     for(int i = 0; i < 2; i++){
         entity[i] = dem::ecs::CreateEntity();
-        entity[i].AddComponent<dem::TransformComponent>();
-        entity[i].AddComponent<dem::MeshRenderer>();
-        dem::TransformComponent* entityTransform = entity[i].GetComponent<dem::TransformComponent>();
-        dem::MeshRenderer* meshRenderer = entity[i].GetComponent<dem::MeshRenderer>();
+        dem::TransformComponent* entityTransform = entity[i].AddComponent<dem::TransformComponent>();
+        dem::MeshRenderer* meshRenderer = entity[i].AddComponent<dem::MeshRenderer>();
         *meshRenderer = (dem::MeshRenderer){
         .program = program,
         .mesh = &mesh};
@@ -62,10 +57,8 @@ int main(){
     entityTransform->position[0] += 1.5f;
 
     dem::ecs::Entity mercedes = dem::ecs::CreateEntity();
-    mercedes.AddComponent<dem::TransformComponent>();
-    mercedes.AddComponent<dem::MeshRenderer>();
-    dem::TransformComponent* mercedesTransform = mercedes.GetComponent<dem::TransformComponent>();
-    dem::MeshRenderer* mercedesMeshRenderer = mercedes.GetComponent<dem::MeshRenderer>();
+    dem::TransformComponent* mercedesTransform = mercedes.AddComponent<dem::TransformComponent>();
+    dem::MeshRenderer* mercedesMeshRenderer = mercedes.AddComponent<dem::MeshRenderer>();
     mercedesTransform->position[1] += 3.f;
     mercedesTransform->scale = dem::math::vec3(1./7., 1./7., 1./7.);
     mercedesMeshRenderer->program = program;
