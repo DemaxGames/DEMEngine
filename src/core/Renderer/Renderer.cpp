@@ -1,9 +1,15 @@
 #include "core/Renderer/Render.h"
 
+#include "core/ECS/ecs.h"
+#include "core/Components/TransformComponent.h"
+#include "core/Components/CameraComponent.h"
+#include "core/Components/MeshRenderer.h"
+
 namespace dem{
 
 GLFWwindow* Renderer::window = NULL;
-dem::Renderer::GLProgram* Renderer::program = NULL;
+
+int counter;
 
 Image* image;
 Renderer::GLImage* glImage;
@@ -31,52 +37,56 @@ int Renderer::Init(int width, int height){
     return 0;
 }
 
-int Renderer::LoadScene(Scene& scene){
-    Logger::get()->log("Loading scene");
-    
-    image = new dem::Image;
-    image->LoadImage("examples/texture.png");
-    glImage = new GLImage(image);
+int Renderer::Render(){
+    TransformComponent* cameraTransform;
+    CameraComponent* camera;
 
-    Renderer::Shader* vertex_shader = new Renderer::Shader("examples/shader.vert", GL_VERTEX_SHADER);
-    vertex_shader->Compile();
-    Renderer::Shader* fragment_shader = new Renderer::Shader("examples/shader.frag", GL_FRAGMENT_SHADER);
-    fragment_shader->Compile();
-    program = new Renderer::GLProgram(vertex_shader, fragment_shader);
-    program->Link();
-
-    for(int i = 0; i < scene.objects.size(); i++){
-        scene.objects[i]->mesh->VAO.program = program;
-        scene.objects[i]->mesh->VAO.VBO = scene.objects[i]->mesh->GetVBO();
-        scene.objects[i]->mesh->VAO.BindAll();
-        // for(int j = 0; i < scene.objects[i]->mesh->VAO.VBO.verticies_size; j += 3){
-        //     std::cout << scene.objects[i]->mesh->VAO.VBO.verticies[j] << ' ' << scene.objects[i]->mesh->VAO.VBO.verticies[j+1] << ' ' << scene.objects[i]->mesh->VAO.VBO.verticies[j+ 2] << '\n';
-        // }
-        // std::cout << '\n';
+    for(int i = 0; i < ecs::entities.size(); i++){
+        camera = ecs::entities[i].GetComponent<CameraComponent>();
+        if(camera != NULL){
+            cameraTransform = ecs::entities[i].GetComponent<TransformComponent>();
+            if(cameraTransform != NULL){
+                break;
+            }
+        }
     }
 
-    return 0;
-}
+    if(camera == NULL){
+        Logger::get()->log("ERROR: cannot find entity with camera component to render");
+        return glfwWindowShouldClose(window);
+    }
+    if(cameraTransform == NULL){
+        Logger::get()->log("ERROR: cannot find transform component of the camera");
+        return glfwWindowShouldClose(window);
+    }
 
-int Renderer::Render(Scene& scene){
-    math::mat4 projection = scene.camera->GetProjectionMatrix();
+    math::mat4 projection = camera->GetProjectionMatrix();
     math::mat4 model_matrix;
-    math::mat4 view_matrix = scene.camera->GetModelMatrix();
+    math::mat4 view_matrix = cameraTransform->GetModelMatrix();
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glUniformMatrix4fv(program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
-    glUniformMatrix4fv(program->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
-    glUniform1i(program->sampler2D_tex, 0);
-    glBindTexture(GL_TEXTURE_2D, glImage->gl);
-
-    for(int i = 0; i < scene.objects.size(); i++){ 
-        glUseProgram(program->gl);
-        model_matrix = scene.objects[i]->GetModelMatrix();
+    
+    
+    TransformComponent* transform;
+    MeshRenderer* meshRenderer;
+    
+    for(int i = 0; i < ecs::entities.size(); i++){
+        meshRenderer = ecs::entities[i].GetComponent<MeshRenderer>();
+        if(meshRenderer == NULL) continue;
+        transform = ecs::entities[i].GetComponent<TransformComponent>();
+        if(transform == NULL) continue;
         
-        glUniformMatrix4fv(program->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
-        glBindVertexArray(scene.objects[i]->mesh->VAO.gl);
-        glDrawArrays(GL_TRIANGLES, 0, scene.objects[i]->mesh->VAO.VBO.verticies_size / 3);
+        //Logger::get()->log("got entity with id: ", (unsigned)ecs::entities[i].id);
+
+        glUniformMatrix4fv(meshRenderer->program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
+        glUniformMatrix4fv(meshRenderer->program->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
+
+        glUseProgram(meshRenderer->program->gl);
+        model_matrix = transform->GetModelMatrix();
+        
+        glUniformMatrix4fv(meshRenderer->program->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
+        glBindVertexArray(meshRenderer->mesh->VAO.gl);
+        glDrawArrays(GL_TRIANGLES, 0, meshRenderer->mesh->VAO.VBO.verticies_size / 3);
     }
 
     glfwSwapBuffers(window);

@@ -1,19 +1,23 @@
 #pragma once
-
-#include "core/Engine/Mesh.h"
 #include "core/math/mat.h"
 
 namespace dem{
 
-class Object{
+class TransformComponent{
 public:
-    Mesh* mesh;
-    math::mat4 model_matrix;
     math::vec3 position;
     math::vec3 rotation;
     math::vec3 scale;
-    
-    Object(Mesh* mesh = NULL);
+
+    math::vec3 forward;
+    math::vec3 right;
+    math::vec3 up;
+
+    TransformComponent* parent;
+
+    TransformComponent();
+
     math::mat4 GetModelMatrix();
 };
+
 }

@@ -19,6 +19,7 @@ public:
     void log(const std::string& msg, const float& f);
     void log(const std::string& msg, const int a);
     void log(const std::string& msg, const unsigned int a);
+    void log(const std::string& msg, const unsigned long long a);
     void log(const std::string& msg, const math::vec2& vec);
     void log(const std::string& msg, const math::vec3& vec);
     void log(const std::string& msg, const math::vec4& vec);

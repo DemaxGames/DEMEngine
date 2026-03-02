@@ -1,5 +1,6 @@
 #include "core/InputSystem/Input.h"
 
+#include "core/Renderer/Render.h"
 #include "core/Logger/Logger.h"
 
 int keyState[dem::KeyCode::Slash+1][2];

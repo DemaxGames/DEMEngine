@@ -42,6 +42,72 @@ void math::mat4::projection(float aspect, float fov, float near, float far){
                             0.f, 0.f, -1.f, 0.f);
 }
 
+void math::mat4::rotation(float x, float y, float z){
+    math::vec3 rotation(x, y, z);
+    *this = math::mat4(std::cos(rotation[1])*std::cos(rotation[2]), std::sin(rotation[0])*std::sin(rotation[1])*std::cos(rotation[2]) - std::cos(rotation[0])*std::sin(rotation[2]), std::cos(rotation[0])*std::sin(rotation[1])*std::cos(rotation[2]) + std::sin(rotation[0])*std::sin(rotation[2]), 0.f,
+                        std::cos(rotation[1])*std::sin(rotation[2]), std::sin(rotation[0])*std::sin(rotation[1])*std::sin(rotation[2]) + std::cos(rotation[0])*std::cos(rotation[2]), std::cos(rotation[0])*std::sin(rotation[1])*std::sin(rotation[2]) - std::sin(rotation[0])*std::cos(rotation[2]), 0.f,
+                        -std::sin(rotation[1]), std::sin(rotation[0])*std::cos(rotation[1]), std::cos(rotation[0])*std::cos(rotation[1]), 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::rotationX(float a){
+    *this = math::mat4(1.f, 0.f, 0.f, 0.f,
+                        0.f, std::cos(a), -std::sin(a), 0.f,
+                        0.f, std::sin(a), std::cos(a), 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::rotationY(float a){
+    *this = math::mat4(std::cos(a), 0.f, std::sin(a), 0.f,
+                        0.f, 1.f, 0.f, 0.f,
+                        -std::sin(a), 0.f, std::cos(a), 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::rotationZ(float a){
+    *this = math::mat4(std::cos(a), -std::sin(a), 0.f, 0.f,
+                        std::sin(a), std::cos(a), 0.f, 0.f,
+                        0.f, 0.f, 1.f, 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::position(float x, float y, float z){
+    *this = math::mat4(1.f, 0.f, 0.f, x,
+                        0.f, 1.f, 0.f, y,
+                        0.f, 0.f, 1.f, z,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::scale(float x, float y, float z){
+    *this = math::mat4(x, 0.f, 0.f, 0.f,
+                        0.f, y, 0.f, 0.f,
+                        0.f, 0.f, z, 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+
+void math::mat4::rotation(math::vec3 rotation){
+    *this = math::mat4(std::cos(rotation[1])*std::cos(rotation[2]), std::sin(rotation[0])*std::sin(rotation[1])*std::cos(rotation[2]) - std::cos(rotation[0])*std::sin(rotation[2]), std::cos(rotation[0])*std::sin(rotation[1])*std::cos(rotation[2]) + std::sin(rotation[0])*std::sin(rotation[2]), 0.f,
+                        std::cos(rotation[1])*std::sin(rotation[2]), std::sin(rotation[0])*std::sin(rotation[1])*std::sin(rotation[2]) + std::cos(rotation[0])*std::cos(rotation[2]), std::cos(rotation[0])*std::sin(rotation[1])*std::sin(rotation[2]) - std::sin(rotation[0])*std::cos(rotation[2]), 0.f,
+                        -std::sin(rotation[1]), std::sin(rotation[0])*std::cos(rotation[1]), std::cos(rotation[0])*std::cos(rotation[1]), 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::position(math::vec3 position){
+    *this = math::mat4(1.f, 0.f, 0.f, position[0],
+                        0.f, 1.f, 0.f, position[1],
+                        0.f, 0.f, 1.f, position[2],
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+void math::mat4::scale(math::vec3 scale){
+    *this = math::mat4(scale[0], 0.f, 0.f, 0.f,
+                        0.f, scale[1], 0.f, 0.f,
+                        0.f, 0.f, scale[2], 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+}
+
+
 
 math::mat4 math::mat4::operator*(const math::mat4& b){
     math::mat4 c(v1[0] * b.v1[0] + v2[0] * b.v1[1] + v3[0] * b.v1[2] + v4[0] * b.v1[3], v1[0] * b.v2[0] + v2[0] * b.v2[1] + v3[0] * b.v2[2] + v4[0] * b.v2[3], v1[0] * b.v3[0] + v2[0] * b.v3[1] + v3[0] * b.v3[2] + v4[0] * b.v3[3], v1[0] * b.v4[0] + v2[0] * b.v4[1] + v3[0] * b.v4[2] + v4[0] * b.v4[3],
