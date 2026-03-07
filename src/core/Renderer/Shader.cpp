@@ -2,21 +2,24 @@
 
 namespace dem{
 
-Renderer::Shader::Shader(const char* string, GLenum shaderType){
-    Logger::get()->log("Creating Shader");
-    if(string != NULL) sourceFile = string;
-    else{
-        Logger::get()->log("ERROR: source file is NULL");
-        return;
-    }
-
-    type = shaderType;
-    gl = glCreateShader(type);
+Renderer::Shader::Shader(){
     compiled = false;
 }
 
+void Renderer::Shader::Create(GLenum shaderType, std::string sourcePath){
+    Logger::get()->log("Creating Shader");
+    if(!sourcePath.empty()) sourceFile = sourcePath;
+    
+
+    if(shaderType != GL_SHADER_TYPE){
+        type = shaderType;
+        gl = glCreateShader(type);
+    }
+}
+
+
 int Renderer::Shader::Compile(){
-    Logger::get()->log("Compiling shader");
+    Logger::get()->log("Compiling shader " + sourceFile);
 
     FILE* file = fopen(sourceFile.data(), "r");
     if(file == NULL){
@@ -32,7 +35,7 @@ int Renderer::Shader::Compile(){
     GLint status;
     glGetShaderiv(gl, GL_COMPILE_STATUS, &status);
     if(status == GL_FALSE){
-        Logger::get()->log("ERROR: compilation failed in file shader.vert");
+        Logger::get()->log("ERROR: compilation failed in file " + sourceFile);
         GLint log_length;
         glGetShaderiv(gl, GL_INFO_LOG_LENGTH, &log_length);
         char* log = new char[log_length];

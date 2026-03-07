@@ -14,13 +14,19 @@ public:
     std::string name;
     std::vector<float> verticies_vector;
     std::vector<float> normals_vector;
+    std::vector<float> uv_vector;
     std::vector<unsigned int> indicies_vector;
+    std::vector<size_t> uv_indicies_vector;
 
     float* verticies;
     size_t verticies_count;
 
     float* normals;
     size_t normals_count;
+
+    bool uvUnwrappingSupport;
+    float* uv;
+    size_t uv_count;
 
     bool drawElementsSupport;
     unsigned int* indicies;

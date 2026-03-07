@@ -17,14 +17,6 @@ public:
     Shader* fragment;
     bool linked;
 
-    GLint vec3_vpos_location;
-    GLint vec3_normal_location;
-    GLint mat4_projection_location;
-    GLint mat4_view_location;
-    GLint mat4_model_location;
-    GLint float_time_location;
-    GLint sampler2D_tex;
-
     GLProgram();
     GLProgram(Shader* vertexShader, Shader* fragmentShader);
     int Link();

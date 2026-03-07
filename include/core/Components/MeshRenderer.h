@@ -1,13 +1,13 @@
 #pragma once
 
 #include "core/Engine/Mesh.h"
-#include "core/Renderer/GLProgram.h"
+#include "core/Engine/Material.h"
 
 namespace dem{
 
 class MeshRenderer{
 public:
-    Renderer::GLProgram* program;
+    Material* material;
     Mesh* mesh;
     
     void Load();

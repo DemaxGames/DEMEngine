@@ -17,7 +17,8 @@ public:
     std::string sourceFile;
     bool compiled;
 
-    Shader(const char* string, GLenum shaderType);
+    Shader();
+    void Create(GLenum shaderType = GL_VERTEX_SHADER, std::string sourcePath = "");
     int Compile();
 };
 }

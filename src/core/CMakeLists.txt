@@ -13,6 +13,7 @@ set(SRC_FILES
     ECS/ecs.cpp
     ECS/Entity.cpp
     Engine/Image.cpp
+    Engine/Material.cpp
     Engine/Mesh.cpp
     InputSystem/Input.cpp
     math/dot.cpp

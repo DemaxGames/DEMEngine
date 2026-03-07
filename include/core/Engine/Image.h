@@ -10,6 +10,6 @@ public:
     int width, height, colorChannels;
     unsigned char* data;
 
-    int LoadImage(std::string filepath);
+    int Load(std::string filepath);
 };
 }

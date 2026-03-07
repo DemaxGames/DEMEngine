@@ -71,6 +71,7 @@ void Mesh::LoadFromObj(std::string path){
         std::string index_str;
         std::string normal_str;
         std::string vertex_str;
+        std::string uv_str;
 
         bool skipIndex = false;
         switch (line[0]){
@@ -82,6 +83,17 @@ void Mesh::LoadFromObj(std::string path){
             case 'v':
                 if(line[1] == 'n'){
                     if(!normalsEnabled) normalsEnabled = true;
+                } else if(line[1] == 't'){
+                    j++;
+                    if(!uvUnwrappingSupport) uvUnwrappingSupport = true;
+                    for(; j < line.length(); j++){
+                        if(line[j] == ' ' || j == line.length() - 1){
+                            uv_str += line[j];
+                            //std::cout << "uv " << uv_str << "\n";
+                            uv_vector.push_back(std::stof(uv_str));
+                            uv_str.clear();
+                        } else uv_str += line[j];
+                    }
                 } else{
                     for(; j < line.length(); j++){
                         if(line[j] == ' ' || j == line.length() - 1){
@@ -93,7 +105,20 @@ void Mesh::LoadFromObj(std::string path){
                 }
                 break;
             case 'f':
-                if(normalsEnabled){
+                if(uvUnwrappingSupport){
+                    for(int k = 0; k < 3; k++){
+                        for(;line[j] != '/'; j++) index_str += line[j];
+                        j++;
+                        for(;line[j] != '/'; j++) uv_str += line[j];
+                        for(;line[j-1] != ' ' || j == line.length() - 1; j++);
+                        //std::cout << "index_str " << index_str << "\n";
+                        //std::cout << "uv_str " << uv_str << "\n";
+                        indicies_vector.push_back(std::stoul(index_str) - 1);
+                        index_str.clear();
+                        uv_indicies_vector.push_back(std::stoul(uv_str) - 1);
+                        uv_str.clear();
+                    }
+                } else if(normalsEnabled){
                     for(; j < line.length(); j++){
                         if(line[j] == '/'){
                             for(;line[j] != ' '; j++);
@@ -122,6 +147,9 @@ void Mesh::LoadFromObj(std::string path){
 
     indicies_count = indicies_vector.size() / 3;
     indicies = indicies_vector.data();
+
+    uv_count = uv_vector.size() / 2;
+    uv = uv_vector.data();
 }
 
 Renderer::VertexBuffer Mesh::GetVBO(){
@@ -133,6 +161,19 @@ Renderer::VertexBuffer Mesh::GetVBO(){
     } else{
         VBO.verticies = new float[indicies_count * 9];
         VBO.normals = new float[indicies_count * 9];
+        if(uvUnwrappingSupport){
+            VBO.uv = new float[indicies_count * 6];
+
+            for(int i = 0; i < indicies_count; i++){
+                VBO.uv[i * 6 + 0] = uv[uv_indicies_vector[i * 2 + 0] * 3 + 0];
+                VBO.uv[i * 6 + 1] = uv[uv_indicies_vector[i * 2 + 0] * 3 + 1];
+                VBO.uv[i * 6 + 2] = uv[uv_indicies_vector[i * 2 + 1] * 3 + 0];
+                VBO.uv[i * 6 + 3] = uv[uv_indicies_vector[i * 2 + 1] * 3 + 1];
+                VBO.uv[i * 6 + 4] = uv[uv_indicies_vector[i * 2 + 2] * 3 + 0];
+                VBO.uv[i * 6 + 5] = uv[uv_indicies_vector[i * 2 + 2] * 3 + 1];
+            }
+            VBO.uv_size = uv_count * 6;
+        }
 
         for(int i = 0; i < indicies_count; i++){
             VBO.verticies[i * 9 + 0] = verticies[indicies[i * 3 + 0] * 3 + 0];
@@ -170,35 +211,70 @@ Renderer::VertexBuffer Mesh::GetVBO(){
         }
 
         VBO.normals_size = indicies_count * 9;
-
-        VBO.data = new float[indicies_count * 18];
-        
-        for(int i = 0; i < indicies_count; i++){
-            VBO.data[i * 18 + 0] = VBO.verticies[i * 9 + 0];
-            VBO.data[i * 18 + 1] = VBO.verticies[i * 9 + 1];
-            VBO.data[i * 18 + 2] = VBO.verticies[i * 9 + 2];
-            VBO.data[i * 18 + 3] = VBO.normals[i * 9 + 0];
-            VBO.data[i * 18 + 4] = VBO.normals[i * 9 + 1];
-            VBO.data[i * 18 + 5] = VBO.normals[i * 9 + 2];
-            VBO.data[i * 18 + 6] = VBO.verticies[i * 9 + 3];
-            VBO.data[i * 18 + 7] = VBO.verticies[i * 9 + 4];
-            VBO.data[i * 18 + 8] = VBO.verticies[i * 9 + 5];
-            VBO.data[i * 18 + 9] = VBO.normals[i * 9 + 3];
-            VBO.data[i * 18 + 10] = VBO.normals[i * 9 + 4];
-            VBO.data[i * 18 + 11] = VBO.normals[i * 9 + 5];
-            VBO.data[i * 18 + 12] = VBO.verticies[i * 9 + 6];
-            VBO.data[i * 18 + 13] = VBO.verticies[i * 9 + 7];
-            VBO.data[i * 18 + 14] = VBO.verticies[i * 9 + 8];
-            VBO.data[i * 18 + 15] = VBO.normals[i * 9 + 6];
-            VBO.data[i * 18 + 16] = VBO.normals[i * 9 + 7];
-            VBO.data[i * 18 + 17] = VBO.normals[i * 9 + 8];
+        if(uvUnwrappingSupport){
+            VBO.data = new float[indicies_count * 24];
+            for(int i = 0; i < indicies_count; i++){
+                VBO.data[i * 24 + 0] = VBO.verticies[i * 9 + 0];
+                VBO.data[i * 24 + 1] = VBO.verticies[i * 9 + 1];
+                VBO.data[i * 24 + 2] = VBO.verticies[i * 9 + 2];
+                VBO.data[i * 24 + 3] = VBO.normals[i * 9 + 0];
+                VBO.data[i * 24 + 4] = VBO.normals[i * 9 + 1];
+                VBO.data[i * 24 + 5] = VBO.normals[i * 9 + 2];
+                VBO.data[i * 24 + 6] = VBO.uv[i * 6 + 0];
+                VBO.data[i * 24 + 7] = VBO.uv[i * 6 + 1];
+                VBO.data[i * 24 + 8] = VBO.verticies[i * 9 + 3];
+                VBO.data[i * 24 + 9] = VBO.verticies[i * 9 + 4];
+                VBO.data[i * 24 + 10] = VBO.verticies[i * 9 + 5];
+                VBO.data[i * 24 + 11] = VBO.normals[i * 9 + 3];
+                VBO.data[i * 24 + 12] = VBO.normals[i * 9 + 4];
+                VBO.data[i * 24 + 13] = VBO.normals[i * 9 + 5];
+                VBO.data[i * 24 + 14] = VBO.uv[i * 6 + 2];
+                VBO.data[i * 24 + 15] = VBO.uv[i * 6 + 3];
+                VBO.data[i * 24 + 16] = VBO.verticies[i * 9 + 6];
+                VBO.data[i * 24 + 17] = VBO.verticies[i * 9 + 7];
+                VBO.data[i * 24 + 18] = VBO.verticies[i * 9 + 8];
+                VBO.data[i * 24 + 19] = VBO.normals[i * 9 + 6];
+                VBO.data[i * 24 + 20] = VBO.normals[i * 9 + 7];
+                VBO.data[i * 24 + 21] = VBO.normals[i * 9 + 8];
+                VBO.data[i * 24 + 22] = VBO.uv[i * 6 + 4];
+                VBO.data[i * 24 + 23] = VBO.uv[i * 6 + 5];
+                VBO.data_size = indicies_count * 24;
+            }
         }
-
-        VBO.data_size = indicies_count * 18;
+        else{
+            VBO.data = new float[indicies_count * 18];
+            for(int i = 0; i < indicies_count; i++){
+                VBO.data[i * 18 + 0] = VBO.verticies[i * 9 + 0];
+                VBO.data[i * 18 + 1] = VBO.verticies[i * 9 + 1];
+                VBO.data[i * 18 + 2] = VBO.verticies[i * 9 + 2];
+                VBO.data[i * 18 + 3] = VBO.normals[i * 9 + 0];
+                VBO.data[i * 18 + 4] = VBO.normals[i * 9 + 1];
+                VBO.data[i * 18 + 5] = VBO.normals[i * 9 + 2];
+                VBO.data[i * 18 + 6] = VBO.verticies[i * 9 + 3];
+                VBO.data[i * 18 + 7] = VBO.verticies[i * 9 + 4];
+                VBO.data[i * 18 + 8] = VBO.verticies[i * 9 + 5];
+                VBO.data[i * 18 + 9] = VBO.normals[i * 9 + 3];
+                VBO.data[i * 18 + 10] = VBO.normals[i * 9 + 4];
+                VBO.data[i * 18 + 11] = VBO.normals[i * 9 + 5];
+                VBO.data[i * 18 + 12] = VBO.verticies[i * 9 + 6];
+                VBO.data[i * 18 + 13] = VBO.verticies[i * 9 + 7];
+                VBO.data[i * 18 + 14] = VBO.verticies[i * 9 + 8];
+                VBO.data[i * 18 + 15] = VBO.normals[i * 9 + 6];
+                VBO.data[i * 18 + 16] = VBO.normals[i * 9 + 7];
+                VBO.data[i * 18 + 17] = VBO.normals[i * 9 + 8];
+                VBO.data_size = indicies_count * 18;
+            }
+        }
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO.gl);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VBO.data_size, (void*)VBO.data, GL_STATIC_DRAW);
     }
+
+    // for(int i = 0; i < VBO.data_size; i += 8){
+    //     std::cout << "vertex[" << i / 8 << "] " << VBO.data[i + 0] << " " <<  VBO.data[i + 1] << " " << VBO.data[i + 2] << "\n";
+    //     std::cout << "normal[" << i / 8 << "] " << VBO.data[i + 3] << " " <<  VBO.data[i + 4] << " " << VBO.data[i + 5] << "\n";
+    //     std::cout << "uv[" << i / 8 << "] " << VBO.data[i + 6] << " " <<  VBO.data[i + 7] << "\n";
+    // }
 
     return VBO;
 }

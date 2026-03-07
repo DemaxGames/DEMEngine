@@ -65,7 +65,7 @@ int Renderer::Render(){
     math::mat4 view_matrix = cameraTransform->GetModelMatrix();
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    glClearColor(0.1, 0.1, 0.1, 1.0);
     
     TransformComponent* transform;
     MeshRenderer* meshRenderer;
@@ -78,13 +78,15 @@ int Renderer::Render(){
         
         //Logger::get()->log("got entity with id: ", (unsigned)ecs::entities[i].id);
 
-        glUniformMatrix4fv(meshRenderer->program->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
-        glUniformMatrix4fv(meshRenderer->program->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
+        glUniformMatrix4fv(meshRenderer->material->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
+        glUniformMatrix4fv(meshRenderer->material->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
+        glBindTexture(GL_TEXTURE_2D ,meshRenderer->material->glImage.gl);
+        glUniform1i(meshRenderer->material->sampler2D_tex, 0);
 
-        glUseProgram(meshRenderer->program->gl);
+        glUseProgram(meshRenderer->material->program.gl);
         model_matrix = transform->GetModelMatrix();
         
-        glUniformMatrix4fv(meshRenderer->program->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
+        glUniformMatrix4fv(meshRenderer->material->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
         glBindVertexArray(meshRenderer->mesh->VAO.gl);
         glDrawArrays(GL_TRIANGLES, 0, meshRenderer->mesh->VAO.VBO.verticies_size / 3);
     }

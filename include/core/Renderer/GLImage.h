@@ -12,6 +12,7 @@ public:
     Image* image;
 
     GLImage(Image* image_ptr = NULL);
+    void Load();
 };
 }
 }

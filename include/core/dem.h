@@ -6,6 +6,8 @@
 #include "core/math/mat.h"
 #include "core/math/uid.h"
 #include "core/Renderer/Render.h"
+#include "core/Engine/Image.h"
+#include "core/Engine/Material.h"
 #include "core/Components/TransformComponent.h"
 #include "core/Components/CameraComponent.h"
 #include "core/Components/MeshRenderer.h"

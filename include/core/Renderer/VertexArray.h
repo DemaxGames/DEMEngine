@@ -4,7 +4,7 @@
 #include "glfw/glfw3.h"
 
 #include "core/Logger/Logger.h"
-#include "core/Renderer/GLProgram.h"
+#include "core/Engine/Material.h"
 #include "core/Renderer/ElementBuffer.h"
 #include "core/Renderer/VertexBuffer.h"
 
@@ -14,7 +14,7 @@ namespace Renderer{
     class VertexArray{
     public:
         GLuint gl;
-        GLProgram* program;
+        Material* material;
         ElementBuffer EBO;
         VertexBuffer VBO;
 
