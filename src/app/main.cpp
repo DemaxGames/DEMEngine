@@ -72,7 +72,6 @@ int main(){
     while(!dem::Renderer::Render()){
         frameCounter++;
 
-        
         cameraTransform->rotation += dem::math::vec3(1.5f, 0.f, 0.f) * dem::Input::GetAxisY() * deltaTime;
         playerTransform->rotation += dem::math::vec3(0.f, 1.5f, 0.f) * dem::Input::GetAxisX() * deltaTime;
         if((cameraTransform->rotation[0] + 1.5 * dem::Input::GetAxisY() * deltaTime) > (PI / 2.f)){

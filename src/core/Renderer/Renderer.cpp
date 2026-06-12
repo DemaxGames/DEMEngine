@@ -87,8 +87,8 @@ int Renderer::Render(){
         model_matrix = transform->GetModelMatrix();
         
         glUniformMatrix4fv(meshRenderer->material->mat4_model_location, 1, GL_FALSE, (GLfloat*)model_matrix.data);
-        glBindVertexArray(meshRenderer->mesh->VAO.gl);
-        glDrawArrays(GL_TRIANGLES, 0, meshRenderer->mesh->VAO.VBO.verticies_size / 3);
+        glBindVertexArray(meshRenderer->VAO.gl);
+        glDrawArrays(GL_TRIANGLES, 0, meshRenderer->VAO.VBO.data_size / 3);
     }
 
     glfwSwapBuffers(window);
