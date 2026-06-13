@@ -7,10 +7,16 @@ int keyState[dem::KeyCode::Slash+1][2];
 
 float dem::Input::sensivity;
 
+float wheelInput[2];
+
 dem::math::vec2 mousePos[2]{dem::math::vec2(0.f, 0.f), dem::math::vec2(0.f, 0.f)};
 
 void mouseCallBack(GLFWwindow* window, double xpos, double ypos){
     mousePos[0] = dem::math::vec2((float)xpos, (float)ypos);
+}
+
+void wheelCallBack(GLFWwindow* window, double x, double y){
+    wheelInput[0] += y;
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -129,7 +135,10 @@ int Input::Init(){
     }
     glfwSetKeyCallback(Renderer::window, keyCallback);
 
-    
+    wheelInput[0] = 0.0f;
+    wheelInput[1] = 0.0f;
+    glfwSetScrollCallback(Renderer::window, wheelCallBack);
+
     sensivity = 10.f;
     glfwSetInputMode(Renderer::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(Renderer::window, mouseCallBack);
@@ -142,6 +151,7 @@ void Input::Update(){
         keyState[i][1] = keyState[i][0];
     }
     mousePos[1] = mousePos[0];
+    wheelInput[1] = wheelInput[0];
 }
 
 bool Input::GetKey(int keyCode){
@@ -165,6 +175,10 @@ float Input::GetAxisX(){
 
 float Input::GetAxisY(){
     return (mousePos[0][1] - mousePos[1][1]) * sensivity / 10.f;
+}
+
+float Input::GetAxisWheel(){
+    return wheelInput[0] - wheelInput[1];
 }
 
 }

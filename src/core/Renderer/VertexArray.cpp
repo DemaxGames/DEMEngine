@@ -6,8 +6,6 @@ Renderer::VertexArray::VertexArray(){
     Logger::get()->log("Creating Vertex Array");
 
     material = NULL;
-    VBO.verticies_size = 0;
-    VBO.normals_size = 0;
     EBO.size = 0;
 }
 
@@ -15,36 +13,20 @@ int Renderer::VertexArray::BindAll(){
     Logger::get()->log("Binding to vertexArray");
 
     size_t stride = 0;
+    glBindBuffer(GL_ARRAY_BUFFER, VBO.gl);
     glGenVertexArrays(1, &gl);
     glBindVertexArray(gl);
     if(material != NULL){
-        if(VBO.verticies_size > 0){
-            stride += 3 * sizeof(float);
-        }
-        if(VBO.normals_size > 0){
-            stride += 3 * sizeof(float);
-        }
-        if(VBO.uv_size > 0){
-            stride += 2 * sizeof(float);
-        }
-        if(EBO.size > 0){
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO.gl);
-        }
         
         glBindBuffer(GL_ARRAY_BUFFER, VBO.gl);
         glEnableVertexAttribArray(material->vec3_vpos_location);
         glVertexAttribPointer(material->vec3_vpos_location, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-        if(VBO.normals_size > 0){
-            glEnableVertexAttribArray(material->vec3_normal_location);
-            glVertexAttribPointer(material->vec3_normal_location, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        }
-        if(VBO.uv_size > 0){
-            std::cout << "Enabling UV attrib\n";
-            glEnableVertexAttribArray(material->vec2_uv_location);
-            glVertexAttribPointer(material->vec2_uv_location, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        }
+        glEnableVertexAttribArray(material->vec3_normal_location);
+        glVertexAttribPointer(material->vec3_normal_location, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(material->vec2_uv_location);
+        glVertexAttribPointer(material->vec2_uv_location, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     } else{
-        Logger::get()->log("ERROR: cannot BindAll because program pointer is not set");
+        Logger::get()->log("ERROR: cannot BindAll because material pointer is not set");
         return -1;
     }
     glBindVertexArray(0);

@@ -12,34 +12,15 @@ namespace dem
 class Mesh{
 public:
     std::string name;
-    std::vector<float> verticies_vector;
-    std::vector<float> normals_vector;
-    std::vector<float> uv_vector;
-    std::vector<unsigned int> indicies_vector;
-    std::vector<size_t> uv_indicies_vector;
+    std::vector<math::vec3> verticies_set;
+    std::vector<math::vec3> normals_set;
+    std::vector<math::vec2> uv_set;
+    std::vector<size_t> vertex_indicies;
+    std::vector<size_t> uv_indicies;
+    std::vector<size_t> normal_indicies;
 
-    float* verticies;
-    size_t verticies_count;
 
-    float* normals;
-    size_t normals_count;
-
-    bool uvUnwrappingSupport;
-    float* uv;
-    size_t uv_count;
-
-    bool drawElementsSupport;
-    unsigned int* indicies;
-    size_t indicies_count;
-
-    bool smoothShading;
-
-    Renderer::VertexArray VAO;
-
-    Mesh(float* pVerticies = NULL, size_t vertexCount = 0,
-        unsigned int* pIndicies = NULL, size_t indexCount = 0);
     int Load(std::string path);
-    Renderer::VertexBuffer GetVBO();
 private:
     void LoadFromObj(std::string path);
 };

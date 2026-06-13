@@ -15,18 +15,10 @@ public:
     float* data;
     size_t data_size;
 
-    float* verticies;
-    size_t verticies_size;
-
-    float* normals;
-    size_t normals_size;
-
-    float* uv;
-    size_t uv_size;
-
     VertexBuffer();
     VertexBuffer(float* verticies, size_t size);
     VertexBuffer(math::vec3* verticies, size_t size);
+    void LoadData();
 };
 
 }

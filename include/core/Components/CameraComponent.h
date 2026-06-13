@@ -5,6 +5,11 @@
 
 namespace dem{
 
+enum Projection{
+    Orthographic,
+    Perspective
+};
+
 class CameraComponent{
 public:
     float nearClip;
@@ -12,6 +17,8 @@ public:
     float fov;
     int width;
     int height;
+    float size;
+    Projection proj;
 
     CameraComponent();
     math::mat4 GetProjectionMatrix();

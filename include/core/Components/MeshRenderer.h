@@ -10,7 +10,11 @@ public:
     Material* material;
     Mesh* mesh;
     
+    Renderer::VertexArray VAO;
+
     void Load();
+private:
+    void LoadVBO();
 };
 
 }
