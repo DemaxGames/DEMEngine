@@ -64,7 +64,8 @@ public:
          float f41 = 0, float f42 = 0, float f43 = 0, float f44 = 0);
 
     void identity();
-    void projection(float aspect, float fov, float near, float far);
+    void perspective(float aspect, float fov, float near, float far);
+    void orthographic(float right, float left, float top, float bottom, float near, float far);
     void rotation(float x, float y, float z);
     void rotationX(float a);
     void rotationY(float a);

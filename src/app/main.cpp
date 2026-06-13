@@ -71,6 +71,11 @@ int main(){
     int fpsFrames = 160;
     while(!dem::Renderer::Render()){
         frameCounter++;
+        
+        if(dem::Input::GetKeyDown(dem::KeyCode::P)) cameraComponent->proj = (dem::Projection)!cameraComponent->proj; // !1 == 0 and !0 == 1
+
+        if(dem::Input::GetAxisWheel() < 0.0f) cameraComponent->size /= 1.1f;
+        if(dem::Input::GetAxisWheel() > 0.0f) cameraComponent->size *= 1.1f;
 
         cameraTransform->rotation += dem::math::vec3(1.5f, 0.f, 0.f) * dem::Input::GetAxisY() * deltaTime;
         playerTransform->rotation += dem::math::vec3(0.f, 1.5f, 0.f) * dem::Input::GetAxisX() * deltaTime;
@@ -90,8 +95,8 @@ int main(){
         if(dem::Input::GetKey(dem::KeyCode::Q)) playerTransform->position += dem::math::vec3(0.f, 0.5f * deltaTime, 0.f);
 
         //std::cout << "                                                                                                                              \n";
-        std::cout << "                                                                                                                              \r";
-        std::cout << "cameraPos: " << playerTransform->position[0] << " " << playerTransform->position[1] << " " <<  playerTransform->position[2] << "\r";
+        // std::cout << "                                                                                                                              \r";
+        // std::cout << "cameraPos: " << playerTransform->position[0] << " " << playerTransform->position[1] << " " <<  playerTransform->position[2] << "\r";
         //std::cout << "cameraRot: " << cameraTransform->rotation[0] << " " << cameraTransform->rotation[1] << " " <<  cameraTransform->rotation[2] << "\r";
         //entityTransform->rotation = entityTransform->rotation + dem::math::vec3(0.f, 0.f, (float) deltaTime * 1.2f);
 

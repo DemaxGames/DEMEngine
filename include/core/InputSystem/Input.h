@@ -14,5 +14,6 @@ bool GetKeyDown(int keyCode);
 bool GetKeyUp(int keyCode);
 float GetAxisX();
 float GetAxisY();
+float GetAxisWheel();
 }
 }

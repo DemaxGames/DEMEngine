@@ -35,11 +35,18 @@ void math::mat4::identity(){
                             0.f, 0.f, 0.f, 1.f);
 }
 
-void math::mat4::projection(float aspect, float fov, float near, float far){
+void math::mat4::perspective(float aspect, float fov, float near, float far){
     *this = math::mat4(1/(aspect * std::tan(fov/2)), 0.f, 0.f, 0.f,
                             0.f, 1/(std::tan(fov/2)), 0.f, 0.f,
                             0.f, 0.f, -(far+near)/(far-near), -(2*far*near)/(far-near),
                             0.f, 0.f, -1.f, 0.f);
+}
+
+void math::mat4::orthographic(float right, float left, float top, float bottom, float near, float far){
+    *this = math::mat4(2.0/(right-left), 0.f, 0.f, -(right+left)/(right-left),
+                            0.f, 2.0/(top-bottom), 0.f, -(top+bottom)/(top-bottom),
+                            0.f, 0.f, -2.f/far-near, -(far+near)/(far-near),
+                            0.f, 0.f, 0.f, 1.f);
 }
 
 void math::mat4::rotation(float x, float y, float z){
