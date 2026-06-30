@@ -18,13 +18,10 @@ int main(){
     dem::ecs::RegisterComponent<dem::MeshRenderer>();
     
     dem::Renderer::Init(1280, 720);
-    logger->log("material");
-
     dem::Image texture;
     texture.Load("examples/texture.png");
 
     dem::Material mat{};
-    logger->log("material done");
     mat.glImage.image = &texture;
     mat.Load();
 
@@ -51,18 +48,6 @@ int main(){
 
     dem::Input::Init();
     dem::Input::sensivity = 3.f;
-
-    logger->log("entity count: ", (uint32_t)dem::ecs::entities.size());
-
-    for(int i = 0; i < dem::ecs::entities.size(); i++){
-        logger->log("entity ", i);
-        logger->log("   id: ", (uint64_t)dem::ecs::entities[i].id);
-        dem::TransformComponent* transform = dem::ecs::entities[i].GetComponent<dem::TransformComponent>();
-        logger->log("   transform ", (uint64_t)transform);
-        logger->log("   parent: ", (uint64_t)transform->parent);
-    }
-
-    logger->log("Starting Rendering");
 
     float deltaTime = 0;
     int frameCounter = 0;

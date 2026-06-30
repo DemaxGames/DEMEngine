@@ -13,7 +13,7 @@ void MeshRenderer::LoadVBO(){
         VAO.VBO.data[i * (3 + 3 + 2) + 5] = mesh->normals_set[mesh->normal_indicies[i]].data[2];
         VAO.VBO.data[i * (3 + 3 + 2) + 6] = mesh->uv_set[mesh->uv_indicies[i]].data[0];
         VAO.VBO.data[i * (3 + 3 + 2) + 7] = mesh->uv_set[mesh->uv_indicies[i]].data[1];
-        std::cout << mesh->uv_set[mesh->uv_indicies[i]].data[0] << " " << mesh->uv_set[mesh->uv_indicies[i]].data[1] << "\n";
+        //std::cout << mesh->uv_set[mesh->uv_indicies[i]].data[0] << " " << mesh->uv_set[mesh->uv_indicies[i]].data[1] << "\n";
     }
 
     VAO.VBO.data_size = mesh->vertex_indicies.size() * (3 + 3 + 2);

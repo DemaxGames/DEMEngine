@@ -1,4 +1,5 @@
 #include "core/Renderer/GLImage.h"
+#include "core/Logger/Logger.h"
 
 dem::Renderer::GLImage::GLImage(dem::Image* image_ptr){
     if(image_ptr == NULL) return;
@@ -13,14 +14,17 @@ dem::Renderer::GLImage::GLImage(dem::Image* image_ptr){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 1, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     return;
 }
 
 void dem::Renderer::GLImage::Load(){
-    if(image == NULL) return;
+    if(image == NULL) {
+        dem::Logger::get()->log("ERROR: cannot load GLImage, the image is NULL");
+        return;
+    }
 
     glGenTextures(1, &gl);
     glActiveTexture(GL_TEXTURE0);
@@ -31,7 +35,7 @@ void dem::Renderer::GLImage::Load(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 1, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     return;

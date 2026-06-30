@@ -60,8 +60,6 @@ math::vec2 GetVec2FromString(std::string line){
         str.clear();
         i++;
     }
-    std::cout << line << "\n";
-    std::cout << vec[0] << " " << vec[1] << "\n";
     return vec;
 }
 
