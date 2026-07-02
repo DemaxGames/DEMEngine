@@ -11,3 +11,4 @@
 #include "core/Components/TransformComponent.h"
 #include "core/Components/CameraComponent.h"
 #include "core/Components/MeshRenderer.h"
+#include "core/Components/TextRenderer.h"

@@ -10,6 +10,7 @@ class GLImage{
 public:
     GLuint gl;
     Image* image;
+    GLenum slot;
 
     GLImage(Image* image_ptr = NULL);
     void Load();

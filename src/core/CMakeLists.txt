@@ -9,6 +9,7 @@ add_compile_options(-g)
 set(SRC_FILES
     Components/CameraComponent.cpp
     Components/MeshRenderer.cpp
+    Components/TextRenderer.cpp
     Components/TransformComponent.cpp
     ECS/ecs.cpp
     ECS/Entity.cpp
@@ -33,6 +34,7 @@ set(SRC_FILES
     Renderer/GLProgram.cpp
     Renderer/Renderer.cpp
     Renderer/Shader.cpp
+    Renderer/TextRendering.cpp
     Renderer/VertexArray.cpp 
     Renderer/VertexBuffer.cpp 
     time/time.cpp

@@ -16,6 +16,7 @@ int main(){
     dem::ecs::RegisterComponent<dem::TransformComponent>();
     dem::ecs::RegisterComponent<dem::CameraComponent>();
     dem::ecs::RegisterComponent<dem::MeshRenderer>();
+    dem::ecs::RegisterComponent<dem::TextRenderer>();
     
     dem::Renderer::Init(1280, 720);
     dem::Image texture;
@@ -45,6 +46,14 @@ int main(){
     entityRenderer->material = &mat;
     entityRenderer->mesh = &mesh;
     entityRenderer->Load();
+    
+    dem::ecs::Entity text = dem::ecs::CreateEntity();
+    dem::TransformComponent* textTransform = text.AddComponent<dem::TransformComponent>();
+    textTransform->position = dem::math::vec3(-0.9, 0.0, 0.0);
+    dem::TextRenderer* textRenderer = text.AddComponent<dem::TextRenderer>();
+    textRenderer->transform = textTransform;
+    textRenderer->str = "stranger";
+    textRenderer->Load();
 
     dem::Input::Init();
     dem::Input::sensivity = 3.f;
@@ -78,6 +87,7 @@ int main(){
 
         if(dem::Input::GetKey(dem::KeyCode::E)) playerTransform->position -= dem::math::vec3(0.f, 0.5f * deltaTime, 0.f);
         if(dem::Input::GetKey(dem::KeyCode::Q)) playerTransform->position += dem::math::vec3(0.f, 0.5f * deltaTime, 0.f);
+        
 
         //std::cout << "                                                                                                                              \n";
         // std::cout << "                                                                                                                              \r";

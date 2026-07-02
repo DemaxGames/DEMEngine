@@ -4,6 +4,8 @@
 #include "core/Components/TransformComponent.h"
 #include "core/Components/CameraComponent.h"
 #include "core/Components/MeshRenderer.h"
+#include "core/Components/TextRenderer.h"
+#include "core/Renderer/TextRendering.h"
 
 namespace dem{
 
@@ -64,7 +66,25 @@ int Renderer::Init(int width, int height){
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 
+    TextInit();
+
     return 0;
+}
+
+void RenderText(TextRenderer* textRenderer){
+    glUseProgram(Renderer::sharedProgram->gl);
+
+    glUniform2fv(Renderer::offsets_location, 100, textRenderer->offsets->data);
+    glUniform1iv(Renderer::data_location, 100, textRenderer->data);
+    
+    glActiveTexture(Renderer::sharedGLImage->slot);
+    glBindTexture(GL_TEXTURE_2D, Renderer::sharedGLImage->gl);
+    glUniform1i(Renderer::sharedTex_location, Renderer::sharedGLImage->slot - GL_TEXTURE0);
+
+    glBindVertexArray(textRenderer->VAO.gl);
+    glDepthFunc(GL_ALWAYS);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, Renderer::sharedVBO->data_size / 2, textRenderer->str.length());
+    glDepthFunc(GL_LESS);
 }
 
 int Renderer::Render(){
@@ -99,20 +119,27 @@ int Renderer::Render(){
     
     TransformComponent* transform;
     MeshRenderer* meshRenderer;
+    TextRenderer* textRenderer;
     
     for(int i = 0; i < ecs::entities.size(); i++){
         meshRenderer = ecs::entities[i].GetComponent<MeshRenderer>();
+        if(transform == NULL) continue;
+        textRenderer = ecs::entities[i].GetComponent<TextRenderer>();
+        if(textRenderer != NULL){
+            RenderText(textRenderer);
+            continue;
+        }
         if(meshRenderer == NULL) continue;
         transform = ecs::entities[i].GetComponent<TransformComponent>();
-        if(transform == NULL) continue;
-        
         //Logger::get()->log("got entity with id: ", (unsigned)ecs::entities[i].id);
         glUseProgram(meshRenderer->material->program.gl);
+
+        glActiveTexture(meshRenderer->material->glImage.slot);
 
         glUniformMatrix4fv(meshRenderer->material->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
         glUniformMatrix4fv(meshRenderer->material->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
         glBindTexture(GL_TEXTURE_2D, meshRenderer->material->glImage.gl);
-        glUniform1f(meshRenderer->material->sampler2D_tex, 0);
+        glUniform1i(meshRenderer->material->sampler2D_tex, meshRenderer->material->glImage.slot - GL_TEXTURE0);
 
         model_matrix = transform->GetModelMatrix();
         
