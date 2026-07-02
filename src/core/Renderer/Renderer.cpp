@@ -56,6 +56,9 @@ int Renderer::Init(int width, int height){
     glfwSwapInterval(0);
     glEnable(GL_DEPTH_TEST); 
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+
     int flags; 
     glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -75,7 +78,7 @@ void RenderText(TextRenderer* textRenderer){
     glUseProgram(Renderer::sharedProgram->gl);
 
     glUniform2fv(Renderer::offsets_location, 100, textRenderer->offsets->data);
-    glUniform1iv(Renderer::data_location, 100, textRenderer->data);
+    glUniform3fv(Renderer::textureUV_location, 100, textRenderer->textureUV->data);
     
     glActiveTexture(Renderer::sharedGLImage->slot);
     glBindTexture(GL_TEXTURE_2D, Renderer::sharedGLImage->gl);

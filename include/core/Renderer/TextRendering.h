@@ -12,7 +12,7 @@ extern VertexBuffer* sharedVBO;
 extern GLImage* sharedGLImage;
 
 extern GLint offsets_location;
-extern GLint data_location;
+extern GLint textureUV_location;
 extern GLint sharedTex_location;
 
 void TextInit();

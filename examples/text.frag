@@ -1,7 +1,7 @@
 #version 330 core
 
 in vec2 fPos;
-flat in int id;
+in vec3 fUV;
 
 uniform sampler2D tex;
 
@@ -9,5 +9,6 @@ out vec4 FragColor;
 
 void main()
 {
-    FragColor = texture(tex, (fPos * 3.0) + vec2(float(id) / 10, 0.1));
+    vec2 uv = vec2(fPos.x * fUV.z + fUV.x, -fPos.y);
+    FragColor = texture(tex, uv);
 }

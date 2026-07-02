@@ -7,17 +7,17 @@ GLProgram* sharedProgram;
 VertexBuffer* sharedVBO;
 GLImage* sharedGLImage;
 GLint offsets_location;
-GLint data_location;
+GLint textureUV_location;
 GLint sharedTex_location;
 
 float quadVert[] = {
-    -0.05f,  0.05f,
-     0.05f, -0.05f,
-    -0.05f, -0.05f,
+    0.0f,  0.0f,
+    1.0f,  0.0f,
+    1.0f,  1.0f,
 
-    -0.05f,  0.05f,
-     0.05f, -0.05f,
-     0.05f,  0.05f
+    0.0f,  0.0f,
+    0.0f,  1.0f,
+    1.0f,  1.0f
 };  
 
 void TextInit(){
@@ -36,7 +36,7 @@ void TextInit(){
     sharedProgram->Link();
 
     offsets_location = glGetUniformLocation(Renderer::sharedProgram->gl, "offsets");
-    data_location = glGetUniformLocation(Renderer::sharedProgram->gl, "data");
+    textureUV_location = glGetUniformLocation(Renderer::sharedProgram->gl, "textureUV");
     sharedTex_location = glGetUniformLocation(Renderer::sharedProgram->gl, "tex");
 }
 

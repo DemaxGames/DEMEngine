@@ -15,6 +15,7 @@ void dem::Renderer::GLImage::Load(){
         return;
     }
     Logger::get()->log("Loading image to the GPU memory: " + image->src);
+    Logger::get()->log("Textures color channels: ", image->colorChannels);
 
     glGenTextures(1, &gl);
     slot = GL_TEXTURE0 + textureSlotCount;

@@ -52,7 +52,7 @@ int main(){
     textTransform->position = dem::math::vec3(-0.9, 0.0, 0.0);
     dem::TextRenderer* textRenderer = text.AddComponent<dem::TextRenderer>();
     textRenderer->transform = textTransform;
-    textRenderer->str = "stranger";
+    textRenderer->str = "FAFFB";
     textRenderer->Load();
 
     dem::Input::Init();

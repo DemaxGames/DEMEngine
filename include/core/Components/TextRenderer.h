@@ -12,7 +12,7 @@ public:
     Renderer::VertexArray VAO;
     std::string str;
     math::vec2 offsets[100];
-    int data[100];
+    math::vec3 textureUV[100];
 
     void Load();
 };
