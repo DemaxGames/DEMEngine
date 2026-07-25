@@ -12,5 +12,5 @@ void main()
     fPos = vPos;
     fUV = textureUV[gl_InstanceID];
     vec2 offset = offsets[gl_InstanceID];
-    gl_Position = vec4(vPos.x * fUV.z + offset.x, (vPos.y + offset.y) / 3.5, 0.0, 1.0);
+    gl_Position = vec4(vPos.x * fUV.z + offset.x, (vPos.y + offset.y) / 8.0, 0.0, 1.0);
 }

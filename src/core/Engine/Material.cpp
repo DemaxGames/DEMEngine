@@ -38,6 +38,9 @@ void Material::Load(){
     mat4_projection_location = glGetUniformLocation(program.gl, "projection");
     float_time_location = glGetUniformLocation(program.gl, "time");
     sampler2D_tex = glGetUniformLocation(program.gl, "tex");
+    lightPos_location = glGetUniformLocation(program.gl, "lightPos");
+    lightColor_location = glGetUniformLocation(program.gl, "lightColor");
+    viewPos_location = glGetUniformLocation(program.gl, "viewPos");
 }
 
 }

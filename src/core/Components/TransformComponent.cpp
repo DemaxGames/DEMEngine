@@ -34,7 +34,7 @@ math::mat4 TransformComponent::GetModelMatrix(){
 
     if(parent != nullptr) modelMat = modelMat * parent->GetModelMatrix();
                                       
-    forward = math::normalize(math::vec3(-modelMat[2][0], modelMat[2][1], modelMat[2][2]));
+    forward = math::normalize(math::vec3(-modelMat[2][0], modelMat[2][1], modelMat[2][2])); 
     up = math::normalize(math::vec3(-modelMat[1][0], modelMat[1][1], modelMat[1][2]));
     right = math::normalize(math::vec3(-modelMat[0][0], modelMat[0][1], modelMat[0][2]));
 
@@ -44,5 +44,10 @@ math::mat4 TransformComponent::GetModelMatrix(){
 
     return modelMat;
 }
+
+math::vec3 TransformComponent::GetWorldPosition(){
+    return (math::vec3)(parent->GetModelMatrix() * math::vec4(position[0], position[1], position[2], 1.0));
+}
+
 
 }

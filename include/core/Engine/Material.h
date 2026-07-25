@@ -24,6 +24,9 @@ public:
     GLint mat4_model_location;
     GLint float_time_location;
     GLint sampler2D_tex;
+    GLint lightPos_location;
+    GLint lightColor_location;
+    GLint viewPos_location;
 
     Material();
     void Load();

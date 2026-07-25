@@ -18,6 +18,7 @@ public:
     TransformComponent();
 
     math::mat4 GetModelMatrix();
+    math::vec3 GetWorldPosition();
 };
 
 }

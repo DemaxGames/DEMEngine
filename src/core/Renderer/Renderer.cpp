@@ -4,6 +4,7 @@
 #include "core/Components/TransformComponent.h"
 #include "core/Components/CameraComponent.h"
 #include "core/Components/MeshRenderer.h"
+#include "core/Components/LightSourceComponent.h"
 #include "core/Components/TextRenderer.h"
 #include "core/Renderer/TextRendering.h"
 
@@ -55,6 +56,8 @@ int Renderer::Init(int width, int height){
 
     glfwSwapInterval(0);
     glEnable(GL_DEPTH_TEST); 
+
+    // glEnable(GL_CULL_FACE);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
@@ -112,11 +115,25 @@ int Renderer::Render(){
         Logger::get()->log("ERROR: cannot find transform component of the camera");
         return glfwWindowShouldClose(window);
     }
+    
+    LightSourceComponent* light;
+
+    for(int i = 0; i < ecs::entities.size(); i++){
+        light = ecs::entities[i].GetComponent<LightSourceComponent>();
+        if(light != NULL){
+            break;
+        }
+    }
 
     math::mat4 projection = camera->GetProjectionMatrix();
     math::mat4 model_matrix;
     math::mat4 view_matrix = cameraTransform->GetModelMatrix();
-    
+    math::vec3 view_pos = cameraTransform->parent->position;
+    view_pos[0] = -view_pos[0];
+    view_pos[1] = -view_pos[1];
+    view_pos[2] = -view_pos[2];
+    // Logger::get()->log("ViewPos: ", view_pos);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.1, 0.1, 0.1, 1.0);
     
@@ -139,10 +156,17 @@ int Renderer::Render(){
 
         glActiveTexture(meshRenderer->material->glImage.slot);
 
+
+        glUniform3fv(meshRenderer->material->viewPos_location, 1, (GLfloat*)view_pos.data);
         glUniformMatrix4fv(meshRenderer->material->mat4_projection_location, 1, GL_FALSE, (GLfloat*)projection.data);
         glUniformMatrix4fv(meshRenderer->material->mat4_view_location, 1, GL_FALSE, (GLfloat*)view_matrix.data);
         glBindTexture(GL_TEXTURE_2D, meshRenderer->material->glImage.gl);
         glUniform1i(meshRenderer->material->sampler2D_tex, meshRenderer->material->glImage.slot - GL_TEXTURE0);
+
+        if(light != NULL){
+            glUniform3fv(meshRenderer->material->lightPos_location, 1, (GLfloat*)&light->transform->position);
+            glUniform3fv(meshRenderer->material->lightColor_location, 1, (GLfloat*)&light->color);
+        }
 
         model_matrix = transform->GetModelMatrix();
         

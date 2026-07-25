@@ -8,6 +8,7 @@ set(CMAKE_BUILD_TYPE "Release")
 add_compile_options(-g)
 set(SRC_FILES
     Components/CameraComponent.cpp
+    Components/LightSourceComponent.cpp
     Components/MeshRenderer.cpp
     Components/TextRenderer.cpp
     Components/TransformComponent.cpp

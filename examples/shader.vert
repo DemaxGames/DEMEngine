@@ -6,6 +6,7 @@ in vec2 uv;
 
 out vec3 n;
 out vec2 fragUV;
+out vec3 fPos;
 
 uniform mat4 projection;
 uniform mat4 model;
@@ -13,7 +14,7 @@ uniform mat4 view;
 
 void main(){
     gl_Position = projection * view * model * vec4(vPos, 1.0);
-    vec4 tmp = projection * view * model * vec4(normal, 1.0);
-    n = tmp.xyz;
+    n = mat3(transpose(inverse(model))) * normal;
     fragUV = uv;
+    fPos = (model * vec4(vPos, 1.0)).xyz;
 }

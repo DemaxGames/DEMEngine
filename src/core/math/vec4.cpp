@@ -78,6 +78,11 @@ math::vec4& math::vec4::operator/=(const float b){
     return *this;
 }
 
+math::vec4::operator math::vec3() const{
+    return math::vec3(data[0], data[1], data[2]);
+}
+
+
 float& math::vec4::operator[](size_t index){
     return data[index];
 }

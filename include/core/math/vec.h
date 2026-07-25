@@ -68,6 +68,8 @@ public:
     vec4& operator*=(const float b);
     vec4& operator/=(const float b);
 
+    explicit operator vec3() const;
+
     float& operator[](size_t index);
     const float& operator[](size_t index) const;
 };
