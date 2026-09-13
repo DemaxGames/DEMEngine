@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <typeindex>
+#include <typeinfo>
 #include "core/ECS/Component.h"
 #include "core/ECS/Entity.h"
 

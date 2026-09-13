@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <ctime>
+#include <time.h>
 #include "core/math/vec.h"
 #include "core/math/mat.h"
 

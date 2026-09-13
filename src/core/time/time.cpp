@@ -2,15 +2,15 @@
 
 #include "glfw/glfw3.h"
 
-float time;
+float _time;
 float deltaTime;
 
 namespace dem{
 
 void Time::Update(){
     float newTime = (float)glfwGetTime();
-    deltaTime = newTime - time;
-    time = newTime;
+    deltaTime = newTime - _time;
+    _time = newTime;
 }
 
 float Time::GetDeltaTime(){

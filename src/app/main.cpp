@@ -2,12 +2,9 @@
 #include <stdio.h>
 #include <filesystem>
 #include <vector>
-#include <windows.h>
 #include "core/dem.h"
 #include "core/time/time.h"
 #include <cmath>
-
-
 
 #define PI 3.141592f
 
@@ -65,7 +62,7 @@ int main(){
     cameraComponent->fov = PI * 1.f / 2.f;
 
     dem::Mesh mesh;
-    mesh.Load("examples\\cube.obj");
+    mesh.Load("examples/cube.obj");
 
     dem::MeshRenderer* entityRenderer = entity.AddComponent<dem::MeshRenderer>();
 

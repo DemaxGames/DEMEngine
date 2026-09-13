@@ -5,6 +5,7 @@ namespace dem{
 
 Logger::Logger(){
     Logger::file = std::ofstream("log.txt");
+    std::cout << "TESTING std::time: " << (unsigned long)time << "\n"; 
     Logger::log("Initialized Logger");
 }
 
@@ -19,73 +20,80 @@ void Logger::fileLog(const std::string& msg, const std::string& filepath){
 }
 
 void Logger::log(const std::string& msg){
-    char time[80];
-    std::time_t time_raw;
-    std::time(&time_raw);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
-    fileLog(time + msg, "Log.txt");
-    std::cout << time << msg << '\n';
-    return;
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
+    fileLog(time_buf + msg, "Log.txt");
+    std::cout << time_buf << msg << '\n';
+    
 }
 
 void Logger::log(const std::string& msg, const float& f){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
-    fileLog(time + msg + std::to_string(f), "Log.txt");
-    std::cout << time + msg + std::to_string(f) << '\n';
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
+    fileLog(time_buf + msg + std::to_string(f), "Log.txt");
+    std::cout << time_buf + msg + std::to_string(f) << '\n';
 }
 
 void Logger::log(const std::string& msg, const int a){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
-    fileLog(time + msg + std::to_string(a), "Log.txt");
-    std::cout << time + msg + std::to_string(a) << '\n';
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
+    fileLog(time_buf + msg + std::to_string(a), "Log.txt");
+    std::cout << time_buf + msg + std::to_string(a) << '\n';
 }
 
 void Logger::log(const std::string& msg, const unsigned int a){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
-    fileLog(time + msg + std::to_string(a), "Log.txt");
-    std::cout << time + msg + std::to_string(a) << '\n';
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
+    fileLog(time_buf + msg + std::to_string(a), "Log.txt");
+    std::cout << time_buf + msg + std::to_string(a) << '\n';
 }
 
 void Logger::log(const std::string& msg, const unsigned long a){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
-    fileLog(time + msg + std::to_string(a), "Log.txt");
-    std::cout << time + msg + std::to_string(a) << '\n';
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
+    fileLog(time_buf + msg + std::to_string(a), "Log.txt");
+    std::cout << time_buf + msg + std::to_string(a) << '\n';
 }
 
 void Logger::log(const std::string& msg, const unsigned long long a){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
-    fileLog(time + msg + std::to_string(a), "Log.txt");
-    std::cout << time + msg + std::to_string(a) << '\n';
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
+    fileLog(time_buf + msg + std::to_string(a), "Log.txt");
+    std::cout << time_buf + msg + std::to_string(a) << '\n';
 }
 
 
 void Logger::log(const std::string& msg, const math::vec2& vec){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
     std::string vec_str = "{";
     vec_str += std::to_string(vec[0]);
     vec_str += "; ";
     vec_str += std::to_string(vec[1]);
     vec_str += "}";
-    fileLog(time + msg + vec_str, "Log.txt");
-    std::cout << time + msg + vec_str<< '\n';
+    fileLog(time_buf + msg + vec_str, "Log.txt");
+    std::cout << time_buf + msg + vec_str<< '\n';
 }
 
 void Logger::log(const std::string& msg, const math::vec3& vec){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
     std::string vec_str = "{";
     vec_str += std::to_string(vec[0]);
     vec_str += "; ";
@@ -93,14 +101,15 @@ void Logger::log(const std::string& msg, const math::vec3& vec){
     vec_str += "; ";
     vec_str += std::to_string(vec[2]);
     vec_str += "}";
-    fileLog(time + msg + vec_str, "Log.txt");
-    std::cout << time + msg + vec_str << '\n';
+    fileLog(time_buf + msg + vec_str, "Log.txt");
+    std::cout << time_buf + msg + vec_str << '\n';
 }
 
 void Logger::log(const std::string& msg, const math::vec4& vec){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
     std::string vec_str = "{";
     vec_str += std::to_string(vec[0]);
     vec_str += "; ";
@@ -110,14 +119,15 @@ void Logger::log(const std::string& msg, const math::vec4& vec){
     vec_str += "; ";
     vec_str += std::to_string(vec[3]);
     vec_str += "}";
-    fileLog(time + msg + vec_str, "Log.txt");
-    std::cout << time + msg + vec_str << '\n';
+    fileLog(time_buf + msg + vec_str, "Log.txt");
+    std::cout << time_buf + msg + vec_str << '\n';
 }
 
 void Logger::log(const std::string& msg, const math::mat2& mat){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
     std::string mat_str = "\n{";
     mat_str += std::to_string(mat[0][0]);
     mat_str += "; ";
@@ -127,14 +137,15 @@ void Logger::log(const std::string& msg, const math::mat2& mat){
     mat_str += "; ";
     mat_str += std::to_string(mat[1][1]);
     mat_str += "}";
-    fileLog(time + msg + mat_str, "Log.txt");
-    std::cout << time + msg + mat_str << '\n';
+    fileLog(time_buf + msg + mat_str, "Log.txt");
+    std::cout << time_buf + msg + mat_str << '\n';
 }
 
 void Logger::log(const std::string& msg, const math::mat3& mat){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
     std::string mat_str = "\n{";
     mat_str += std::to_string(mat[0][0]);
     mat_str += "; ";
@@ -154,14 +165,15 @@ void Logger::log(const std::string& msg, const math::mat3& mat){
     mat_str += "; ";
     mat_str += std::to_string(mat[2][2]);
     mat_str += "}";
-    fileLog(time + msg + mat_str, "Log.txt");
-    std::cout << time + msg + mat_str << '\n';
+    fileLog(time_buf + msg + mat_str, "Log.txt");
+    std::cout << time_buf + msg + mat_str << '\n';
 }
 
 void Logger::log(const std::string& msg, const math::mat4& mat){
-    char time[80];
-    std::time_t time_raw = std::time(nullptr);
-    std::strftime(time, 80, "[%H:%M:%S]", std::localtime(&time_raw));
+    
+    char time_buf[80];
+    time_t time_raw = time(nullptr);
+    strftime(time_buf, 80, "[%H:%M:%S]", localtime(&time_raw));
     std::string mat_str = "\n{";
     mat_str += std::to_string(mat[0][0]);
     mat_str += "; ";
@@ -195,8 +207,8 @@ void Logger::log(const std::string& msg, const math::mat4& mat){
     mat_str += "; ";
     mat_str += std::to_string(mat[3][3]);
     mat_str += "}";
-    fileLog(time + msg + mat_str, "Log.txt");
-    std::cout << time + msg + mat_str << '\n';
+    fileLog(time_buf + msg + mat_str, "Log.txt");
+    std::cout << time_buf + msg + mat_str << '\n';
 }
 
 };
