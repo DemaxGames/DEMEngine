@@ -64,6 +64,16 @@ math::vec2& math::vec2::operator/=(const float b){
     return *this;
 }
 
+bool math::vec2::operator==(const math::vec2&b){
+    return this->data[0] == b.data[0] && this->data[1] == b.data[1];
+}
+
+
+bool math::vec2::operator!=(const math::vec2&b){
+    return !(*this == b);
+}
+
+
 float& math::vec2::operator[] (size_t index){
     return data[index];
 }

@@ -24,13 +24,21 @@ public:
     vec2& operator*=(const float b);
     vec2& operator/=(const float b);
 
+    bool operator==(const vec2&b);
+    bool operator!=(const vec2&b);
+
     float& operator[](size_t index);
     const float& operator[](size_t index) const;
 };
 
 class vec3{
 public:
-    float data[3];
+    union{
+        struct{
+            float x, y, z;
+        };
+        float data[3];
+    };
 
     vec3();
     vec3(float a, float b, float c);
@@ -46,6 +54,9 @@ public:
     vec3& operator*=(const float b);
     vec3& operator/=(const float b);
 
+    bool operator==(const vec3&b);
+    bool operator!=(const vec3&b);
+
     float& operator[](size_t index);
     const float& operator[](size_t index) const;
 };
@@ -56,6 +67,7 @@ public:
 
     vec4();
     vec4(float a, float b, float c, float d);
+    vec4(vec3 v, float d);
 
     vec4 operator-(const vec4& b);
     vec4 operator+(const vec4& b);
@@ -67,6 +79,9 @@ public:
     vec4& operator-=(const vec4& b);
     vec4& operator*=(const float b);
     vec4& operator/=(const float b);
+
+    bool operator==(const vec4&b);
+    bool operator!=(const vec4&b);
 
     explicit operator vec3() const;
 

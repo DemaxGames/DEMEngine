@@ -78,10 +78,13 @@ int Renderer::Init(int width, int height){
 }
 
 void RenderText(TextRenderer* textRenderer){
+    if(textRenderer->HasChanged()) textRenderer->LoadOffsets();
+
     glUseProgram(Renderer::sharedProgram->gl);
 
     glUniform2fv(Renderer::offsets_location, 100, textRenderer->offsets->data);
     glUniform3fv(Renderer::textureUV_location, 100, textRenderer->textureUV->data);
+    glUniform3fv(Renderer::color_location, 1, textRenderer->color.data);
     
     glActiveTexture(Renderer::sharedGLImage->slot);
     glBindTexture(GL_TEXTURE_2D, Renderer::sharedGLImage->gl);
@@ -89,8 +92,27 @@ void RenderText(TextRenderer* textRenderer){
 
     glBindVertexArray(textRenderer->VAO.gl);
     glDepthFunc(GL_ALWAYS);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, Renderer::sharedVBO->data_size / 2, textRenderer->str.length());
+    glDrawArraysInstanced(GL_TRIANGLES, 0, Renderer::sharedVBO->data_size / 2, textRenderer->GetLength());
     glDepthFunc(GL_LESS);
+}
+
+math::vec3 TransformPointColumnMajor(const math::mat4& mat, const math::vec3& point) {
+    math::vec3 result;
+    
+    // Multiply matrix columns by the vector components (w = 1.0 implicit for the 4th column)
+    result.x = mat.m[0] * point.x + mat.m[4] * point.y + mat.m[8]  * point.z + mat.m[12];
+    result.y = mat.m[1] * point.x + mat.m[5] * point.y + mat.m[9]  * point.z + mat.m[13];
+    result.z = mat.m[2] * point.x + mat.m[6] * point.y + mat.m[10] * point.z + mat.m[14];
+    
+    // Account for perspective division if w is not 1.0 (rare for pure spatial transforms)
+    float w  = mat.m[3] * point.x + mat.m[7] * point.y + mat.m[11] * point.z + mat.m[15];
+    if (w != 1.0f && w != 0.0f) {
+        result.x /= w;
+        result.y /= w;
+        result.z /= w;
+    }
+
+    return result;
 }
 
 int Renderer::Render(){
@@ -127,11 +149,9 @@ int Renderer::Render(){
 
     math::mat4 projection = camera->GetProjectionMatrix();
     math::mat4 model_matrix;
-    math::mat4 view_matrix = cameraTransform->GetModelMatrix();
-    math::vec3 view_pos = cameraTransform->parent->position;
-    view_pos[0] = -view_pos[0];
-    view_pos[1] = -view_pos[1];
-    view_pos[2] = -view_pos[2];
+    math::mat4 view_matrix = camera->GetViewMatrix();
+    math::vec3 view_pos = cameraTransform->GetWorldPosition();
+
     // Logger::get()->log("ViewPos: ", view_pos);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

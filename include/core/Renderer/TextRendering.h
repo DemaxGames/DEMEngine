@@ -14,6 +14,7 @@ extern GLImage* sharedGLImage;
 extern GLint offsets_location;
 extern GLint textureUV_location;
 extern GLint sharedTex_location;
+extern GLint color_location;
 
 void TextInit();
 

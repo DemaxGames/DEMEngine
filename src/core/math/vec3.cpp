@@ -71,6 +71,15 @@ math::vec3& math::vec3::operator/=(const float b){
     return *this;
 }
 
+bool math::vec3::operator==(const math::vec3&b){
+    return this->data[0] == b.data[0] && this->data[1] == b.data[1] && this->data[2] == b.data[2];
+}
+
+
+bool math::vec3::operator!=(const math::vec3&b){
+    return !(*this == b);
+}
+
 float& math::vec3::operator[](size_t index){
     return data[index];
 }
