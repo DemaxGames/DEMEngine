@@ -170,11 +170,11 @@ bool Input::GetKeyUp(int keyCode){
 }
 
 float Input::GetAxisX(){
-    return (mousePos[0][0] - mousePos[1][0]) * sensivity / 10.f;
+    return (mousePos[0][0] - mousePos[1][0]) * sensivity / -10.f;
 }
 
 float Input::GetAxisY(){
-    return (mousePos[0][1] - mousePos[1][1]) * sensivity / 10.f;
+    return (mousePos[0][1] - mousePos[1][1]) * sensivity / -10.f;
 }
 
 float Input::GetAxisWheel(){

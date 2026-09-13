@@ -2,6 +2,7 @@
 
 #include "core/math/vec.h"
 #include "core/math/mat.h"
+#include "core/Components/TransformComponent.h"
 
 namespace dem{
 
@@ -12,6 +13,7 @@ enum Projection{
 
 class CameraComponent{
 public:
+    TransformComponent *pTransform;
     float nearClip;
     float farClip;
     float fov;
@@ -22,5 +24,6 @@ public:
 
     CameraComponent();
     math::mat4 GetProjectionMatrix();
+    math::mat4 GetViewMatrix();
 };
 }

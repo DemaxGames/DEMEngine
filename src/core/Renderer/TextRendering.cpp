@@ -9,6 +9,7 @@ GLImage* sharedGLImage;
 GLint offsets_location;
 GLint textureUV_location;
 GLint sharedTex_location;
+GLint color_location;
 
 float quadVert[] = {
     0.0f,  0.0f,
@@ -38,6 +39,7 @@ void TextInit(){
     offsets_location = glGetUniformLocation(Renderer::sharedProgram->gl, "offsets");
     textureUV_location = glGetUniformLocation(Renderer::sharedProgram->gl, "textureUV");
     sharedTex_location = glGetUniformLocation(Renderer::sharedProgram->gl, "tex");
+    color_location = glGetUniformLocation(Renderer::sharedProgram->gl, "color");
 }
 
 }

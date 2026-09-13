@@ -1,5 +1,6 @@
 #include "core/Components/TransformComponent.h"
 #include <cmath>
+#include "core/Logger/Logger.h"
 
 
 namespace dem{
@@ -15,28 +16,19 @@ TransformComponent::TransformComponent(){
 math::mat4 TransformComponent::GetModelMatrix(){
     math::mat4 scaleMat;
     math::mat4 rotationMat;
-    math::mat4 rotationMatZ;
-    math::mat4 rotationMatX;
-    math::mat4 rotationMatY;
     math::mat4 positionMat;
 
     scaleMat.scale(scale);
-    rotationMat.identity();
-    rotationMatY.rotationZ(rotation[2]);
-    rotationMatZ.rotationX(rotation[0]);
-    rotationMatX.rotationY(rotation[1]);
-    rotationMat = rotationMat * rotationMatZ;
-    rotationMat = rotationMat * rotationMatX;
-    rotationMat = rotationMat * rotationMatY;
+    rotationMat.rotation(rotation);
     positionMat.position(position);
 
-    math::mat4 modelMat = rotationMat * positionMat * scaleMat;
+    math::mat4 modelMat = positionMat * rotationMat * scaleMat;
 
-    if(parent != nullptr) modelMat = modelMat * parent->GetModelMatrix();
+    if(parent != nullptr) modelMat = modelMat * parent->GetModelMatrix();   
                                       
-    forward = math::normalize(math::vec3(-modelMat[2][0], modelMat[2][1], modelMat[2][2])); 
-    up = math::normalize(math::vec3(-modelMat[1][0], modelMat[1][1], modelMat[1][2]));
-    right = math::normalize(math::vec3(-modelMat[0][0], modelMat[0][1], modelMat[0][2]));
+    forward = math::normalize(math::vec3()-(math::vec3)modelMat[2]);
+    up = math::normalize((math::vec3)modelMat[1]);
+    right = math::normalize((math::vec3)modelMat[0]);
 
     // forward = math::vec3(cos(rotation[0]) * sin(rotation[1]), -sin(rotation[0]), cos(rotation[0]) * cos(rotation[1]));
     // up = math::vec3(cos(rotation[1]), 0, -sin(rotation[1]));
@@ -46,8 +38,19 @@ math::mat4 TransformComponent::GetModelMatrix(){
 }
 
 math::vec3 TransformComponent::GetWorldPosition(){
-    return (math::vec3)(parent->GetModelMatrix() * math::vec4(position[0], position[1], position[2], 1.0));
+    math::vec4 a = math::vec4(position, 1.0);
+    if(parent != nullptr) a = parent->GetModelMatrix() * a;
+    if(a[3] == 0.0) return (math::vec3)a;
+    return (math::vec3)a / a[3];
 }
 
+math::mat4 TransformComponent::GetRotationMatrix(){
+    math::mat4 local_rotation_mat;
+    local_rotation_mat.rotation(rotation);
+    if(parent != nullptr){
+        local_rotation_mat = parent->GetRotationMatrix() * local_rotation_mat;
+    }
+    return local_rotation_mat;
+}
 
 }

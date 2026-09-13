@@ -1,5 +1,5 @@
 #include "core/Components/CameraComponent.h"
-
+#include "core/Logger/Logger.h"
 #include <cmath>
 
 namespace dem{
@@ -26,5 +26,25 @@ math::mat4 CameraComponent::GetProjectionMatrix(){
     }
     return result;
 }
+
+math::mat4 CameraComponent::GetViewMatrix(){
+    if(pTransform == nullptr){
+        Logger::get()->log("ERROR: cannot get view matrix from camera component, the transform is not set");
+        return math::mat4();
+    }
+
+    math::vec3 invPos = pTransform->GetWorldPosition() * -1.0f;
+    math::mat4 invPosMat;
+    invPosMat.position(invPos);
+    math::mat4 invRot = pTransform->GetRotationMatrix();
+    invRot.transpose();
+
+    math::mat4 viewMat;
+    viewMat.identity();
+    viewMat = viewMat * invRot;
+    viewMat = viewMat * invPosMat;
+    return viewMat;
+}
+
 
 }

@@ -51,11 +51,18 @@ public:
 
 class mat4{
 public:
-    vec4 data[4];
+    union{
+        vec4 data[4];
+        struct{
+            float m[16];
+        };
+    };
+
     vec4& v1 = data[0];
     vec4& v2 = data[1];
     vec4& v3 = data[2];
     vec4& v4 = data[3];
+
 
     mat4(vec4 a, vec4 b, vec4 c, vec4 d);
     mat4(float f11 = 0, float f12 = 0, float f13 = 0, float f14 = 0,
@@ -76,6 +83,9 @@ public:
     void rotation(vec3 rotation);
     void position(vec3 position);
     void scale(vec3 scale);
+
+    bool inverse();
+    void transpose();
 
     mat4 operator*(const mat4& b);
     vec4 operator*(const vec4& b);

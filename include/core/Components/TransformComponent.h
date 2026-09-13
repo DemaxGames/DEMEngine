@@ -19,6 +19,9 @@ public:
 
     math::mat4 GetModelMatrix();
     math::vec3 GetWorldPosition();
+    math::mat4 GetRotationMatrix();
+
 };
+
 
 }
