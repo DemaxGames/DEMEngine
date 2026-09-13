@@ -5,7 +5,6 @@ namespace dem{
 
 Logger::Logger(){
     Logger::file = std::ofstream("log.txt");
-    std::cout << "TESTING std::time: " << (unsigned long)time << "\n"; 
     Logger::log("Initialized Logger");
 }
 
