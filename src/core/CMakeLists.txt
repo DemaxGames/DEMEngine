@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.31.5)
 project(demengine)
 include_directories("../../include")
-set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+if(MSYS)
+    set(CMAKE_SHARED_LIBRARY_PREFIX "")
+endif()
 
 set(CMAKE_BUILD_TYPE "Release")
 
@@ -39,10 +42,18 @@ set(SRC_FILES
     Renderer/VertexArray.cpp 
     Renderer/VertexBuffer.cpp 
     time/time.cpp
-    glad.c
-    WinDLL.cpp)
+    glad.c)
+
+if(MSYS)
+    list(APPEND SRC_FILES WinDLL.cpp)
+endif()
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 
-target_link_directories(${PROJECT_NAME} PRIVATE ../../lib/)
-target_link_libraries(${PROJECT_NAME} glfw3)
+if(MSYS)
+    target_link_directories(${PROJECT_NAME} PRIVATE ../../lib/)
+    target_link_libraries(${PROJECT_NAME} glfw3)
+elseif(LINUX)
+    find_package(glfw3 3.3 REQUIRED)
+    target_link_libraries(${PROJECT_NAME} glfw)
+endif()

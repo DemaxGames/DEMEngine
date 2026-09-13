@@ -35,6 +35,7 @@
 *.exe
 *.out
 *.app
+test
 
 # debug information files
 *.dwo
@@ -43,8 +44,12 @@
 .vscode
 # win bat scripts
 *.bat
+# bash scripts
+*.sh
+
 #log files
 log.txt
+
 #cmake files
 d
 build
