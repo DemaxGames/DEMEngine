@@ -81,7 +81,7 @@ int main(){
     dem::CharSet font;
     font.Load("examples/font.txt");
 
-    dem::Renderer::Init(1280, 720);
+    dem::Renderer::Init(1920, 1080);
     dem::Image texture;
     texture.Load("examples/texture.png");
 
@@ -146,7 +146,7 @@ int main(){
     shroomMaterial.glImage.image = &shroomTexture;
     shroomMaterial.Load();
 
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 50; i++){
         AddShroom(&shroomMesh, &shroomMaterial);
     }
 
@@ -187,6 +187,9 @@ int main(){
         if(dem::Input::GetKey(dem::KeyCode::R)) entityTransform->position += dem::math::vec3(0.f, 0.5f * deltaTime, 0.f);
         if(dem::Input::GetKey(dem::KeyCode::F)) entityTransform->position -= dem::math::vec3(0.f, 0.5f * deltaTime, 0.f);
         
+        for(int i = 0; i < shroomsTransform.size(); i++){
+            shroomsTransform[i]->position = dem::math::vec3((float)i / 10.f, sin((float)i / 10.f + glfwGetTime() / 1.f), 5.0);
+        }
 
         lightTransform->position = dem::math::vec3(-3.0, 1.0, 0.0);
         // lightTransform->position = dem::math::vec3(std::sin(glfwGetTime() / 5.0), 0.f, std::cos(glfwGetTime() / 5.0)) * 3.f;
@@ -205,7 +208,7 @@ int main(){
             fpsDeltatime = 0;
         }
 
-
+   
         
         dem::Input::Update();
         dem::Time::Update();

@@ -27,9 +27,12 @@ int Renderer::Shader::Compile(){
         Logger::get()->log(sourceFile);
         return -1;
     }
-    char* src = new char[std::filesystem::file_size(sourceFile)];
-    for(int i = 0; i < std::filesystem::file_size(sourceFile); i++) src[i] = 0;
-    fread(src, std::filesystem::file_size(sourceFile), 1, file);
+    char* src = new char[std::filesystem::file_size(sourceFile) + 1];
+    if(!fread(src, std::filesystem::file_size(sourceFile), 1, file)){
+        Logger::get()->log("ERROR: could not read from file: " + sourceFile);
+        return -1;
+    }
+    src[std::filesystem::file_size(sourceFile)] = '\0';
     glShaderSource(gl, 1, &src, NULL);
     glCompileShader(gl);
     GLint status;

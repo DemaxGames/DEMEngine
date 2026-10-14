@@ -9,7 +9,7 @@ Renderer::VertexBuffer::VertexBuffer(){
 Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
     Logger::get()->log("Creating Vertex Buffer");
 
-    if(data != NULL) data = verticies;
+    if(verticies != NULL) data = verticies;
     else{
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
@@ -28,7 +28,7 @@ Renderer::VertexBuffer::VertexBuffer(float* verticies, size_t size){
 Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
     Logger::get()->log("Creating Vertex Buffer");
 
-    if(data != NULL) data = (float*)verticies;
+    if(verticies != NULL) data = (float*)verticies;
     else{
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
@@ -45,8 +45,7 @@ Renderer::VertexBuffer::VertexBuffer(math::vec3* verticies, size_t size){
 }
 
 void Renderer::VertexBuffer::LoadData(){
-    if(data != NULL) data = (float*)data;
-    else{
+    if(data == NULL){
         Logger::get()->log("ERROR: Cannot create Vertex Buffer, verticies is NULL");
         return;
     }
