@@ -3,7 +3,7 @@
 #include "core/Renderer/Render.h"
 #include "core/Logger/Logger.h"
 
-int keyState[dem::KeyCode::Slash+1][2];
+int keyState[dem::KeyCode::RCtrl+1][2];
 
 float dem::Input::sensivity;
 
@@ -123,13 +123,25 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         case GLFW_KEY_SLASH:
             keyState[dem::KeyCode::Slash][0] = action;
             break;
+        case GLFW_KEY_LEFT_SHIFT:
+            keyState[dem::KeyCode::LShift][0] = action;
+            break;
+        case GLFW_KEY_RIGHT_SHIFT:
+            keyState[dem::KeyCode::RShift][0] = action;
+            break;
+        case GLFW_KEY_LEFT_CONTROL:
+            keyState[dem::KeyCode::LCtrl][0] = action;
+            break;
+        case GLFW_KEY_RIGHT_CONTROL:
+            keyState[dem::KeyCode::RCtrl][0] = action;
+            break;
     }
 }
 
 namespace dem{
 
 int Input::Init(){
-    for(int i = 0; i < KeyCode::Slash+1; i++){
+    for(int i = 0; i < KeyCode::RCtrl+1; i++){
         keyState[i][0] = GLFW_RELEASE;
         keyState[i][1] = GLFW_RELEASE;
     }
@@ -147,7 +159,7 @@ int Input::Init(){
 }
 
 void Input::Update(){
-    for(int i = 0; i < KeyCode::Slash+1; i++){
+    for(int i = 0; i < KeyCode::RCtrl+1; i++){
         keyState[i][1] = keyState[i][0];
     }
     mousePos[1] = mousePos[0];

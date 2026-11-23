@@ -57,6 +57,10 @@ namespace dem{
         M,
         Comma,
         Period,
-        Slash
+        Slash,
+        LShift,
+        RShift,
+        LCtrl,
+        RCtrl
     };
 }

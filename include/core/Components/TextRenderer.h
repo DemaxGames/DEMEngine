@@ -27,8 +27,8 @@ public:
     CharSet *pCharSet;
     TransformComponent* transform;
     Renderer::VertexArray VAO;
-    math::vec2 offsets[100];
-    math::vec3 textureUV[100];
+    math::vec2 offsets[256];
+    math::vec3 textureUV[256];
 
     TextRenderer();
     void Load();

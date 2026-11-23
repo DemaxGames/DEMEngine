@@ -13,6 +13,7 @@ set(SRC_FILES
     Components/CameraComponent.cpp
     Components/LightSourceComponent.cpp
     Components/MeshRenderer.cpp
+    Components/Rigidbody.cpp
     Components/TextRenderer.cpp
     Components/TransformComponent.cpp
     ECS/ecs.cpp
@@ -21,6 +22,7 @@ set(SRC_FILES
     Engine/Material.cpp
     Engine/Mesh.cpp
     InputSystem/Input.cpp
+    PhysicsSystem.cpp
     math/dot.cpp
     math/mat2.cpp
     math/mat3.cpp

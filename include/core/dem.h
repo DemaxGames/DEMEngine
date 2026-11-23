@@ -13,3 +13,5 @@
 #include "core/Components/LightSourceComponent.h"
 #include "core/Components/MeshRenderer.h"
 #include "core/Components/TextRenderer.h"
+#include "core/Components/Rigidbody.h"
+#include "core/PhysicsSystem.h"

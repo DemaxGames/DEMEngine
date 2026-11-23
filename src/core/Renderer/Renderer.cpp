@@ -82,17 +82,20 @@ void RenderText(TextRenderer* textRenderer){
 
     glUseProgram(Renderer::sharedProgram->gl);
 
-    glUniform2fv(Renderer::offsets_location, 100, textRenderer->offsets->data);
-    glUniform3fv(Renderer::textureUV_location, 100, textRenderer->textureUV->data);
+    glUniform2fv(Renderer::offsets_location, 256, textRenderer->offsets->data);
+    glUniform3fv(Renderer::textureUV_location, 256, textRenderer->textureUV->data);
     glUniform3fv(Renderer::color_location, 1, textRenderer->color.data);
     
     glActiveTexture(Renderer::sharedGLImage->slot);
     glBindTexture(GL_TEXTURE_2D, Renderer::sharedGLImage->gl);
     glUniform1i(Renderer::sharedTex_location, Renderer::sharedGLImage->slot - GL_TEXTURE0);
 
+    int charCount = (int)textRenderer->GetLength();
+    if(charCount > 256) charCount = 256;
+
     glBindVertexArray(textRenderer->VAO.gl);
     glDepthFunc(GL_ALWAYS);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, Renderer::sharedVBO->data_size / 2, textRenderer->GetLength());
+    glDrawArraysInstanced(GL_TRIANGLES, 0, Renderer::sharedVBO->data_size / 2, charCount);
     glDepthFunc(GL_LESS);
 }
 
@@ -157,20 +160,20 @@ int Renderer::Render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.1, 0.1, 0.1, 1.0);
     
-    TransformComponent* transform;
+    TransformComponent* transform = nullptr;
     MeshRenderer* meshRenderer;
     TextRenderer* textRenderer;
     
     for(int i = 0; i < ecs::entities.size(); i++){
         meshRenderer = ecs::entities[i].GetComponent<MeshRenderer>();
-        if(transform == NULL) continue;
         textRenderer = ecs::entities[i].GetComponent<TextRenderer>();
+        transform = ecs::entities[i].GetComponent<TransformComponent>();
+        if(transform == nullptr) continue;
         if(textRenderer != NULL){
             RenderText(textRenderer);
             continue;
         }
         if(meshRenderer == NULL) continue;
-        transform = ecs::entities[i].GetComponent<TransformComponent>();
         //Logger::get()->log("got entity with id: ", (unsigned)ecs::entities[i].id);
         glUseProgram(meshRenderer->material->program.gl);
 

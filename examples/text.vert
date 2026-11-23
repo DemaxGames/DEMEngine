@@ -1,8 +1,8 @@
 #version 330 core
 in vec2 vPos;
 
-uniform vec3 textureUV[100];
-uniform vec2 offsets[100];
+uniform vec3 textureUV[256];
+uniform vec2 offsets[256];
 
 out vec2 fPos;
 out vec3 fUV;

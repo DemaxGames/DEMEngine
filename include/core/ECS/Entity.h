@@ -31,7 +31,7 @@ template<class T> T* Entity::AddComponent(){
         genericComponentPool = componentPools[typeid(T)];
     }
     else{
-        Logger::get()->log("ERROR: component is not registered!!!");
+        Logger::get()->log("ERROR: component is not registered!!! " +  std::string(typeid(T).name()));
         return nullptr;
     }
 
@@ -53,7 +53,7 @@ template<class T> T* Entity::GetComponent(){
         genericComponentPool = componentPools[typeid(T)];
     }
     else{
-        Logger::get()->log("ERROR: component is not registered!!!");
+        Logger::get()->log("ERROR: component is not registered!!!" + std::string(typeid(T).name()));
         return nullptr;
     }
 

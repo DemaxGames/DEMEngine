@@ -79,11 +79,22 @@ void TextRenderer::LoadOffsets(){
         return;
     }
     math::vec2 curOffset(transform->position[0], transform->position[1]);
-    for(int i = 0; i < str.length() && i < 100; i++){
+    float startX = transform->position[0];
+    float lineHeight = 1.7f;
+    for(int i = 0; i < str.length() && i < 256; i++){
+        if(str[i] == '\r') continue;
+        if(str[i] == '\n'){
+            textureUV[i] = math::vec3(0, 0, 0);
+            offsets[i] = curOffset;
+            curOffset[0] = startX;
+            curOffset[1] -= lineHeight;
+            continue;
+        }
         if(str[i] == ' '){
             textureUV[i] = math::vec3(0, 0, 0.002);
             offsets[i] = curOffset;
             curOffset[0] += textureUV[i][2];
+            continue;
         }
 
         textureUV[i] = charToUV(str[i], pCharSet);
