@@ -4,15 +4,17 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <algorithm>
 #include <cstdlib>
 #include "core/dem.h"
 #include "core/time/time.h"
+
 
 #define PI 3.141592f
 
 using namespace dem;
 
-// ---------- small vector helpers (avoid const-incompatible engine operators) ----------
+// ---------- small vector helpers ----------
 static math::vec3 vmake(float x, float y, float z){ return math::vec3(x, y, z); }
 static math::vec3 vsub(const math::vec3& a, const math::vec3& b){
     return math::vec3(a.data[0]-b.data[0], a.data[1]-b.data[1], a.data[2]-b.data[2]);
@@ -35,33 +37,57 @@ static math::vec3 vcross(const math::vec3& a, const math::vec3& b){
         a.data[2]*b.data[0] - a.data[0]*b.data[2],
         a.data[0]*b.data[1] - a.data[1]*b.data[0]);
 }
+static math::vec3 vnorm(const math::vec3& a){
+    float l = vlen(a);
+    if(l < 0.0001f) return vmake(0,0,0);
+    return vscale(a, 1.0f / l);
+}
+
+// Make a quad face the camera (local +Z normal points at camera)
+// x=pitch, y=yaw, z=roll for the engine rotation convention
+static void faceCamera(math::vec3& rot, const math::vec3& objPos, const math::vec3& camPos){
+    math::vec3 dir = vnorm(vsub(camPos, objPos));
+    rot.x = -std::asin(dir.data[1]);
+    rot.y = std::atan2(dir.data[0], dir.data[2]);
+    rot.z = 0.0f;
+}
 
 // ---------- globals ----------
-dem::ecs::Entity earthEntity, moonEntity, csmEntity, cameraEntity, lightEntity, hudEntity;
+ecs::Entity earthEntity, moonEntity, csmEntity, cameraEntity, lightEntity, hudEntity;
+ecs::Entity starEntity;
+ecs::Entity plumeEntity;
+ecs::Entity markerEntities[6]; // prograde, retrograde, radial_out, radial_in, normal, antinormal
 
-dem::TransformComponent* earthTransform = nullptr;
-dem::TransformComponent* moonTransform = nullptr;
-dem::TransformComponent* csmTransform = nullptr;
-dem::TransformComponent* cameraTransform = nullptr;
-dem::TransformComponent* hudTransform = nullptr;
-dem::CameraComponent* cameraComponent = nullptr;
-dem::Rigidbody* csmRigidbody = nullptr;
-dem::TextRenderer* hudText = nullptr;
+TransformComponent* earthTransform = nullptr;
+TransformComponent* moonTransform = nullptr;
+TransformComponent* csmTransform = nullptr;
+TransformComponent* cameraTransform = nullptr;
+TransformComponent* starTransform = nullptr;
+TransformComponent* plumeTransform = nullptr;
+TransformComponent* markerTransforms[6];
+TransformComponent* hudTransform = nullptr;
 
-dem::PhysicsSystem physics;
+CameraComponent* cameraComponent = nullptr;
+Rigidbody* csmRigidbody = nullptr;
+TextRenderer* hudText = nullptr;
+
+PhysicsSystem physics;
 
 // meshes / textures
-dem::Mesh sphereMesh, csmMesh;
-dem::Image earthTexture, moonTexture, csmTexture;
-dem::Material* earthMat = nullptr;
-dem::Material* moonMat = nullptr;
-dem::Material* csmMat = nullptr;
-dem::CharSet font;
+Mesh sphereMesh, csmMesh, quadMesh;
+Image earthTexture, moonTexture, csmTexture, starsTexture, plumeTexture;
+Material* earthMat = nullptr;
+Material* moonMat = nullptr;
+Material* csmMat = nullptr;
+Material* quadMat = nullptr;
+Material* starsMat = nullptr;
+Material* plumeMat = nullptr;
+CharSet font;
 
 // game state
 float thrust = 0.0f;
-const float maxThrust = 200.0f;
-const float thrustStep = 80.0f;
+const float maxThrust = 2000.0f;
+const float thrustStep = 800.0f;
 float timeWarp = 1.0f;
 bool showOrbitInfo = false;
 bool gameOver = false;
@@ -72,7 +98,6 @@ float cameraDistance = 120.0f;
 float cameraYaw = PI * 0.5f;
 float cameraPitch = 0.2f;
 
-// constants kept in sync with PhysicsSystem
 const float t_earthRadius = 6000.0f;
 const float t_moonRadius = 2000.0f;
 const float t_moonDistance = 380000.0f;
@@ -82,7 +107,11 @@ bool deathStarted = false;
 float deathTimer = 0.0f;
 int deathCharIndex = 0;
 std::string deathMessage = "MISSION FAILED";
-float hintTimer = 0.0f;
+
+// marker names
+const char* markerNames[6] = {
+    "PROGRADE", "RETROGRADE", "RADIAL OUT", "RADIAL IN", "NORMAL", "ANTI-NORMAL"
+};
 
 // ---------- orbit math ----------
 struct OrbitData{
@@ -135,13 +164,11 @@ static float EstimateBurnTime(float currentRadius, float targetApoRadius, float 
     float vNeeded = std::sqrt(mu * (2.0f / currentRadius - 1.0f / aTarget));
     float dv = vNeeded - currentSpeed;
     if(dv <= 0.0f) return 0.0f;
-    // burnTime = dv * mass / thrustForce
     return dv * mass / thrust;
 }
 
 // ---------- input ----------
 void UpdateInput(float deltaTime){
-    // thrust throttle
     if(dem::Input::GetKey(dem::KeyCode::LShift) || dem::Input::GetKey(dem::KeyCode::RShift)){
         thrust += thrustStep * deltaTime;
         if(thrust > maxThrust) thrust = maxThrust;
@@ -150,28 +177,25 @@ void UpdateInput(float deltaTime){
         thrust -= thrustStep * deltaTime;
         if(thrust < 0.0f) thrust = 0.0f;
     }
+    if(dem::Input::GetKeyDown(dem::KeyCode::Z)) thrust = maxThrust;
     if(dem::Input::GetKeyDown(dem::KeyCode::X)) thrust = 0.0f;
 
-    // update orientation vectors
     csmTransform->GetModelMatrix();
 
-    // apply thrust along vessel forward (only when not warping and not landed)
     if(thrust > 0.0f && timeWarp <= 1.0f && !landed){
-        csmRigidbody->AddForce(vscale(csmTransform->forward, thrust));
+        csmRigidbody->AddForce(vscale(csmTransform->up, thrust));
     }
 
-    // rotation (only when not warping)
     if(timeWarp <= 1.0f && !landed){
         float rot = 1.0f * deltaTime;
-        if(dem::Input::GetKey(dem::KeyCode::W)) csmTransform->rotation.x += rot;
-        if(dem::Input::GetKey(dem::KeyCode::S)) csmTransform->rotation.x -= rot;
-        if(dem::Input::GetKey(dem::KeyCode::A)) csmTransform->rotation.y -= rot;
-        if(dem::Input::GetKey(dem::KeyCode::D)) csmTransform->rotation.y += rot;
-        if(dem::Input::GetKey(dem::KeyCode::Q)) csmTransform->rotation.z -= rot;
-        if(dem::Input::GetKey(dem::KeyCode::E)) csmTransform->rotation.z += rot;
+        if(dem::Input::GetKey(dem::KeyCode::S)) csmTransform->RotateLocal(rot, dem::math::vec3(1.0, 0.0, 0.0));
+        if(dem::Input::GetKey(dem::KeyCode::W)) csmTransform->RotateLocal(-rot, dem::math::vec3(1.0, 0.0, 0.0));
+        if(dem::Input::GetKey(dem::KeyCode::E)) csmTransform->RotateLocal(rot, dem::math::vec3(0.0, 1.0, 0.0));
+        if(dem::Input::GetKey(dem::KeyCode::Q)) csmTransform->RotateLocal(-rot, dem::math::vec3(0.0, 1.0, 0.0));
+        if(dem::Input::GetKey(dem::KeyCode::A)) csmTransform->RotateLocal(rot, dem::math::vec3(0.0, 0.0, 1.0));
+        if(dem::Input::GetKey(dem::KeyCode::D)) csmTransform->RotateLocal(-rot, dem::math::vec3(0.0, 0.0, 1.0));
     }
 
-    // time warp cycle
     if(dem::Input::GetKeyDown(dem::KeyCode::K)){
         if(timeWarp < 1.5f) timeWarp = 2.0f;
         else if(timeWarp < 5.0f) timeWarp = 10.0f;
@@ -185,28 +209,30 @@ void UpdateInput(float deltaTime){
         else timeWarp = 1.0f;
     }
 
-    // auto-disable warp in atmosphere or inside Moon SoI
+    static bool moonSoI = false;
+
     if(timeWarp > 1.0f){
         float alt = physics.GetAltitudeAboveEarth(csmTransform->position);
         float distMoon = vlen(vsub(moonTransform->position, csmTransform->position));
-        if(alt < physics.atmosphereTop || distMoon < physics.moonSoI){
+        if(alt < physics.atmosphereTop){
+            timeWarp = 1.0f;
+        }
+        if(!moonSoI && distMoon < physics.moonSoI){
+            moonSoI = true;
             timeWarp = 1.0f;
         }
     }
 
-    // orbit info toggle
     if(dem::Input::GetKeyDown(dem::KeyCode::H)){
         showOrbitInfo = !showOrbitInfo;
     }
 
-    // camera zoom
     float wheel = dem::Input::GetAxisWheel();
     if(wheel < 0.0f) cameraDistance *= 1.1f;
     if(wheel > 0.0f) cameraDistance *= 0.9f;
     if(cameraDistance < 15.0f) cameraDistance = 15.0f;
     if(cameraDistance > 3000.0f) cameraDistance = 3000.0f;
 
-    // camera orbit via mouse
     cameraYaw += dem::Input::GetAxisX() * 0.06f;
     cameraPitch += dem::Input::GetAxisY() * 0.06f;
     if(cameraPitch > 1.45f) cameraPitch = 1.45f;
@@ -223,6 +249,9 @@ void UpdateCamera(){
     math::vec3 camPos = vadd(csmTransform->position, vscale(vmake(cp*sy, sp, cp*cy), cameraDistance));
     cameraTransform->position = camPos;
 
+    // also update starfield center to follow camera (skybox effect)
+    if(starTransform) starTransform->position = camPos;
+
     math::vec3 look = vsub(csmTransform->position, camPos);
     float len = vlen(look);
     if(len > 0.0001f) look = vscale(look, 1.0f / len);
@@ -237,19 +266,17 @@ static void TryLand(const math::vec3& bodyPos, float bodyRadius){
     math::vec3 rel = vsub(csmTransform->position, bodyPos);
     float dist = vlen(rel);
     float alt = dist - bodyRadius;
-    if(alt > 50.0f) return;
+    if(alt > 5.0f) return;
     if(alt < -bodyRadius) return;
 
     math::vec3 normal = (dist > 0.0001f) ? vscale(rel, 1.0f / dist) : vmake(0,1,0);
-    float verticalSpeed = vdot(csmRigidbody->velocity, normal); // negative = descending
+    float verticalSpeed = vdot(csmRigidbody->velocity, normal);
 
-    // descending too fast -> crash
-    if(verticalSpeed <= -2.0f){
+    if(verticalSpeed <= -4.0f){
         gameOver = true;
         return;
     }
-    // slow enough -> stick to surface (engine acts as landing leg)
-    if(verticalSpeed > -2.0f){
+    if(verticalSpeed > -4.0f){
         landed = true;
         csmRigidbody->isKinematic = true;
         csmRigidbody->velocity = vmake(0,0,0);
@@ -266,15 +293,65 @@ void CheckLanding(){
     TryLand(moonTransform->position, t_moonRadius);
 }
 
+// ---------- plume ----------
+void UpdatePlume(){
+    if(!plumeTransform) return;
+    if(thrust > 0.0f && timeWarp <= 1.0f && !landed){
+        // plume behind ship, opposite to forward
+        math::vec3 plumePos = vsub(csmTransform->position, vscale(csmTransform->up, 25.0f));
+        plumeTransform->position = plumePos;
+        faceCamera(plumeTransform->rotation, plumePos, cameraTransform->position);
+        float scale = 5.0f + (thrust / maxThrust) * 15.0f;
+        plumeTransform->scale = vmake(scale, scale, scale);
+    } else {
+        // hide by scaling to 0
+        plumeTransform->scale = vmake(0.001f, 0.001f, 0.001f);
+    }
+}
+
+// ---------- orbit markers ----------
+void UpdateMarkers(){
+    // Determine which body we reference for orbital directions
+    math::vec3 relEarth = vsub(csmTransform->position, earthTransform->position);
+    float distEarth = vlen(relEarth);
+    float distMoon = vlen(vsub(csmTransform->position, moonTransform->position));
+    bool inMoon = distMoon < physics.moonSoI;
+
+    math::vec3 bodyCenter = inMoon ? moonTransform->position : earthTransform->position;
+    float bodyRadius = inMoon ? t_moonRadius : t_earthRadius;
+
+    math::vec3 relPos = vsub(csmTransform->position, bodyCenter);
+    math::vec3 radialOut = vnorm(relPos);
+    math::vec3 radialIn = vscale(radialOut, -1.0f);
+
+    math::vec3 vel = csmRigidbody->velocity;
+    math::vec3 prograde = vnorm(vel);
+    math::vec3 retrograde = vscale(prograde, -1.0f);
+
+    math::vec3 h = vcross(relPos, vel);
+    math::vec3 normal = vnorm(h);
+    math::vec3 antiNormal = vscale(normal, -1.0f);
+
+    math::vec3 dirs[6] = { prograde, retrograde, radialOut, radialIn, normal, antiNormal };
+    float markerDist = 120.0f;
+
+    for(int i = 0; i < 6; i++){
+        if(!markerTransforms[i]) continue;
+        math::vec3 mPos = vadd(csmTransform->position, vscale(dirs[i], markerDist));
+        markerTransforms[i]->position = mPos;
+        faceCamera(markerTransforms[i]->rotation, mPos, cameraTransform->position);
+        markerTransforms[i]->scale = vmake(8.0f, 8.0f, 8.0f);
+    }
+}
+
 // ---------- HUD ----------
 void UpdateHUD(){
     if(gameOver){
-        return; // death screen handled in main loop
+        return;
     }
 
     std::string text;
     if(showOrbitInfo){
-        // Determine current SoI
         math::vec3 relEarth = vsub(csmTransform->position, earthTransform->position);
         float distEarth = vlen(relEarth);
         float distMoon = vlen(vsub(csmTransform->position, moonTransform->position));
@@ -308,7 +385,6 @@ void UpdateHUD(){
         text += "WARP: " + std::to_string((int)timeWarp) + "x\n";
         text += "THR: " + std::to_string((int)(thrust / maxThrust * 100.0f)) + "%\n";
 
-        // Moon transfer analysis (only meaningful in Earth SoI)
         if(!inMoon){
             float currentSpeed = vlen(csmRigidbody->velocity);
             float moonEdge = t_moonDistance - physics.moonSoI;
@@ -324,6 +400,7 @@ void UpdateHUD(){
     } else {
         text = "H: orbit info   K/L: warp   Shift/Ctrl: thrust   X: cut\n";
         text += "WASD: pitch/yaw   QE: roll   Wheel: zoom   Mouse: camera";
+        std::transform(text.begin(), text.end(), text.begin(), ::toupper);
     }
 
     hudText->SetText(text);
@@ -331,32 +408,38 @@ void UpdateHUD(){
 
 // ---------- main ----------
 int main(){
-    dem::Logger *logger = dem::Logger::get();
+    Logger *logger = Logger::get();
 
-    dem::ecs::init();
-    dem::ecs::RegisterComponent<dem::TransformComponent>();
-    dem::ecs::RegisterComponent<dem::CameraComponent>();
-    dem::ecs::RegisterComponent<dem::MeshRenderer>();
-    dem::ecs::RegisterComponent<dem::TextRenderer>();
-    dem::ecs::RegisterComponent<dem::LightSourceComponent>();
-    dem::ecs::RegisterComponent<dem::Rigidbody>();
+    ecs::init();
+    ecs::RegisterComponent<TransformComponent>();
+    ecs::RegisterComponent<CameraComponent>();
+    ecs::RegisterComponent<MeshRenderer>();
+    ecs::RegisterComponent<TextRenderer>();
+    ecs::RegisterComponent<LightSourceComponent>();
+    ecs::RegisterComponent<Rigidbody>();
 
-    dem::Renderer::Init(1920, 1080);
-    dem::Input::Init();
-    dem::Input::sensivity = 1.0f;
+    Renderer::Init(1920, 1080);
+    Input::Init();
+    Input::sensivity = 1.0f;
 
     font.Load("examples/font.txt");
 
     sphereMesh.Load("assets/sphere.obj");
     csmMesh.Load("assets/CSM.obj");
+    quadMesh.Load("assets/quad.obj");
 
     earthTexture.Load("assets/earth.png");
     moonTexture.Load("assets/moon.png");
     csmTexture.Load("assets/csm.png");
+    starsTexture.Load("assets/stars.png");
+    plumeTexture.Load("assets/plume.png");
 
-    earthMat = new dem::Material();
-    moonMat = new dem::Material();
-    csmMat = new dem::Material();
+    earthMat = new Material();
+    moonMat = new Material();
+    csmMat = new Material();
+    quadMat = new Material();
+    starsMat = new Material();
+    plumeMat = new Material();
 
     earthMat->glImage.image = &earthTexture;
     earthMat->Load();
@@ -364,70 +447,111 @@ int main(){
     moonMat->Load();
     csmMat->glImage.image = &csmTexture;
     csmMat->Load();
+    quadMat->glImage.image = &plumeTexture; // quadMat uses plume tex for markers/plume (markers use their own below)
+    quadMat->Load();
+    starsMat->glImage.image = &starsTexture;
+    starsMat->Load();
+    plumeMat->glImage.image = &plumeTexture;
+    plumeMat->Load();
+
+    // NOTE: markers need individual textures but share quadMat's shader program.
+    // For now all markers use plume.png; you can swap per-marker material later.
+
+    // Starfield (drawn first so it's the background)
+    starEntity = ecs::CreateEntity();
+    starTransform = starEntity.AddComponent<TransformComponent>();
+    starTransform->position = vmake(0,0,0);
+    starTransform->scale = vmake(1000000.0f, 1000000.0f, 1000000.0f);
+    {
+        MeshRenderer* r = starEntity.AddComponent<MeshRenderer>();
+        r->mesh = &sphereMesh; r->material = starsMat; r->Load();
+    }
 
     // Earth
-    earthEntity = dem::ecs::CreateEntity();
-    earthTransform = earthEntity.AddComponent<dem::TransformComponent>();
+    earthEntity = ecs::CreateEntity();
+    earthTransform = earthEntity.AddComponent<TransformComponent>();
     earthTransform->position = vmake(0,0,0);
     earthTransform->scale = vmake(t_earthRadius, t_earthRadius, t_earthRadius);
     {
-        dem::MeshRenderer* r = earthEntity.AddComponent<dem::MeshRenderer>();
+        MeshRenderer* r = earthEntity.AddComponent<MeshRenderer>();
         r->mesh = &sphereMesh; r->material = earthMat; r->Load();
     }
 
     // Moon
-    moonEntity = dem::ecs::CreateEntity();
-    moonTransform = moonEntity.AddComponent<dem::TransformComponent>();
+    moonEntity = ecs::CreateEntity();
+    moonTransform = moonEntity.AddComponent<TransformComponent>();
     moonTransform->position = vmake(t_moonDistance, 0, 0);
     moonTransform->scale = vmake(t_moonRadius, t_moonRadius, t_moonRadius);
     {
-        dem::MeshRenderer* r = moonEntity.AddComponent<dem::MeshRenderer>();
+        MeshRenderer* r = moonEntity.AddComponent<MeshRenderer>();
         r->mesh = &sphereMesh; r->material = moonMat; r->Load();
     }
 
-    // CSM: start on the Earth surface on the +X axis, pointing radially outward
-    csmEntity = dem::ecs::CreateEntity();
-    csmTransform = csmEntity.AddComponent<dem::TransformComponent>();
+    // CSM
+    csmEntity = ecs::CreateEntity();
+    csmTransform = csmEntity.AddComponent<TransformComponent>();
     csmTransform->position = vmake(t_earthRadius + 100.0f, 0.0f, 0.0f);
-    csmTransform->rotation = vmake(0.0f, -PI * 0.5f, 0.0f);
+    csmTransform->rotation = vmake(0.0f, -PI * 0.5f, -PI * 0.5f);
     csmTransform->scale = vmake(2.0f, 2.0f, 2.0f);
-    csmRigidbody = csmEntity.AddComponent<dem::Rigidbody>();
-    csmRigidbody->mass = 1000.0f;
-    csmRigidbody->inverseMass =  1.0f / csmRigidbody->mass;
+    csmRigidbody = csmEntity.AddComponent<Rigidbody>();
+    csmRigidbody->mass = 100.0f;
+    csmRigidbody->inverseMass = 1.0f / csmRigidbody->mass;
     csmRigidbody->useGravity = true;
     csmRigidbody->isKinematic = false;
     {
-        dem::MeshRenderer* r = csmEntity.AddComponent<dem::MeshRenderer>();
+        MeshRenderer* r = csmEntity.AddComponent<MeshRenderer>();
         r->mesh = &csmMesh; r->material = csmMat; r->Load();
     }
 
+    // Engine plume
+    plumeEntity = ecs::CreateEntity();
+    plumeTransform = plumeEntity.AddComponent<TransformComponent>();
+    plumeTransform->position = vmake(0,0,0);
+    plumeTransform->scale = vmake(0.001f, 0.001f, 0.001f);
+    {
+        MeshRenderer* r = plumeEntity.AddComponent<MeshRenderer>();
+        r->mesh = &quadMesh; r->material = plumeMat; r->Load();
+    }
+
+    // Orbit markers (6 billboards)
+    for(int i = 0; i < 6; i++){
+        markerEntities[i] = ecs::CreateEntity();
+        markerTransforms[i] = markerEntities[i].AddComponent<TransformComponent>();
+        markerTransforms[i]->position = vmake(0,0,0);
+        markerTransforms[i]->scale = vmake(8.0f, 8.0f, 8.0f);
+        {
+            MeshRenderer* r = markerEntities[i].AddComponent<MeshRenderer>();
+            r->mesh = &quadMesh; r->material = quadMat; r->Load();
+        }
+    }
+
     // Camera
-    cameraEntity = dem::ecs::CreateEntity();
-    cameraTransform = cameraEntity.AddComponent<dem::TransformComponent>();
+    cameraEntity = ecs::CreateEntity();
+    cameraTransform = cameraEntity.AddComponent<TransformComponent>();
     cameraTransform->position = vmake(t_earthRadius + 220.0f, 0.0f, 0.0f);
-    cameraComponent = cameraEntity.AddComponent<dem::CameraComponent>();
+    cameraComponent = cameraEntity.AddComponent<CameraComponent>();
     cameraComponent->pTransform = cameraTransform;
     cameraComponent->fov = PI * 0.5f;
     cameraComponent->nearClip = 1.0f;
     cameraComponent->farClip = 2000000.0f;
     cameraComponent->proj = dem::Perspective;
 
-    // Sun / light
-    lightEntity = dem::ecs::CreateEntity();
+    // Light
+    lightEntity = ecs::CreateEntity();
     {
-        dem::TransformComponent* lt = lightEntity.AddComponent<dem::TransformComponent>();
+        TransformComponent* lt = lightEntity.AddComponent<TransformComponent>();
         lt->position = vmake(-5000.f, 3000.f, -5000.f);
-        dem::LightSourceComponent* l = lightEntity.AddComponent<dem::LightSourceComponent>();
+        LightSourceComponent* l = lightEntity.AddComponent<LightSourceComponent>();
         l->transform = lt;
         l->color = vmake(1.f, 1.f, 1.f);
         l->strength = 1.0f;
     }
 
     // HUD text
-    hudEntity = dem::ecs::CreateEntity();
-    hudTransform = hudEntity.AddComponent<dem::TransformComponent>();
+    hudEntity = ecs::CreateEntity();
+    hudTransform = hudEntity.AddComponent<TransformComponent>();
     hudTransform->position = vmake(-0.48f, 15.5f, 0.0f);
-    hudText = hudEntity.AddComponent<dem::TextRenderer>();
+    hudText = hudEntity.AddComponent<TextRenderer>();
     hudText->color = vmake(0.2f, 0.9f, 1.0f);
     hudText->transform = hudTransform;
     hudText->pCharSet = &font;
@@ -440,7 +564,7 @@ int main(){
     float deltaTime = 0.0f;
     int frameCounter = 0;
 
-    while(!dem::Renderer::Render()){
+    while(!Renderer::Render()){
         frameCounter++;
 
         if(!gameOver){
@@ -451,6 +575,8 @@ int main(){
 
             UpdateCamera();
             CheckLanding();
+            UpdatePlume();
+            UpdateMarkers();
             UpdateHUD();
         } else {
             if(!deathStarted){
@@ -468,9 +594,9 @@ int main(){
             hudText->SetText(deathMessage.substr(0, deathCharIndex) + "_");
         }
 
-        dem::Input::Update();
-        dem::Time::Update();
-        deltaTime = dem::Time::GetDeltaTime();
+        Input::Update();
+        Time::Update();
+        deltaTime = Time::GetDeltaTime();
     }
 
     logger->log("Total frames generated: ", frameCounter);

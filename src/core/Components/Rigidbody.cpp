@@ -29,7 +29,6 @@ void Rigidbody::Integrate(float deltaTime){
     // F = ma => a = F/m
     acceleration = forceAccumulator * inverseMass;
 
-    std::cout << "acceleration: " << acceleration.x << " " << acceleration.y << " " << acceleration.z << "\n";
     
     // v = v + a * dt
     velocity = velocity + acceleration * deltaTime;

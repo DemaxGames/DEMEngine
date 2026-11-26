@@ -53,4 +53,22 @@ math::mat4 TransformComponent::GetRotationMatrix(){
     return local_rotation_mat;
 }
 
+void TransformComponent::RotateLocal(float angleRadians, const math::vec3& localAxis) {
+    // 1. Get current rotation matrix from your existing Euler angles
+    math::mat4 currentRot;
+    currentRot.rotation(rotation);
+
+    // 2. Build a rotation matrix for the local delta rotation
+    // (Use whatever axis-angle matrix function your math library has)
+    math::mat4 tmp;
+    tmp.identity();
+    math::mat4 deltaRot = math::rotate(tmp, angleRadians, localAxis);
+
+    // 3. Multiply on the RIGHT to apply in local space
+    math::mat4 newRot = currentRot * deltaRot;
+
+    // 4. Decompose newRot back into Euler angles (assuming Y * X * Z order)
+    rotation = math::ExtractEulerAnglesZYX(newRot);
+}
+
 }

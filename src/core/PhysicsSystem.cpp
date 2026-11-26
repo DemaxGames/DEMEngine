@@ -10,11 +10,11 @@ PhysicsSystem::PhysicsSystem(){
     // Gravitational parameters scaled for 1 unit = 100m
     // Earth: g = 9.8 m/s^2 = 0.098 units/s^2 at r = 6000 units
     // GM = g * r^2 = 0.098 * 6000^2 = 3,528,000
-    earthGM = 3528000.0f;
+    earthGM = 35280000.0f;
 
     // Moon: g = 1.62 m/s^2 = 0.0162 units/s^2 at r = 2000 units
     // GM = g * r^2 = 0.0162 * 2000^2 = 64,800
-    moonGM = 64800.0f;
+    moonGM = 648000.0f;
 
     // Body radii
     earthRadius = 6000.0f;

@@ -87,13 +87,16 @@ public:
     bool inverse();
     void transpose();
 
-    mat4 operator*(const mat4& b);
-    vec4 operator*(const vec4& b);
+    mat4 operator*(const mat4& b) const;
+    vec4 operator*(const vec4& b) const;
     mat4& operator=(const mat4& b);
 
     vec4& operator[](size_t index);
     const vec4& operator[](size_t index) const;
 };
+
+mat4 rotate(const mat4& m, float angleRadians, const vec3& axis);
+vec3 ExtractEulerAnglesZYX(const mat4& m);
 
 }
 }

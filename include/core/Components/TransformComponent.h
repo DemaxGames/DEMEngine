@@ -20,7 +20,7 @@ public:
     math::mat4 GetModelMatrix();
     math::vec3 GetWorldPosition();
     math::mat4 GetRotationMatrix();
-
+    void RotateLocal(float angleRadians, const math::vec3& localAxis);
 };
 
 

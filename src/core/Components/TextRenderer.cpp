@@ -93,7 +93,7 @@ void TextRenderer::LoadOffsets(){
         if(str[i] == ' '){
             textureUV[i] = math::vec3(0, 0, 0.002);
             offsets[i] = curOffset;
-            curOffset[0] += textureUV[i][2];
+            curOffset[0] += textureUV[i][2] + 0.002f;
             continue;
         }
 

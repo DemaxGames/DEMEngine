@@ -117,7 +117,7 @@ void math::mat4::scale(math::vec3 scale){
 
 
 
-math::mat4 math::mat4::operator*(const math::mat4& b){
+math::mat4 math::mat4::operator*(const math::mat4& b) const{
     math::mat4 c(v1[0] * b.v1[0] + v2[0] * b.v1[1] + v3[0] * b.v1[2] + v4[0] * b.v1[3], v1[0] * b.v2[0] + v2[0] * b.v2[1] + v3[0] * b.v2[2] + v4[0] * b.v2[3], v1[0] * b.v3[0] + v2[0] * b.v3[1] + v3[0] * b.v3[2] + v4[0] * b.v3[3], v1[0] * b.v4[0] + v2[0] * b.v4[1] + v3[0] * b.v4[2] + v4[0] * b.v4[3],
                       v1[1] * b.v1[0] + v2[1] * b.v1[1] + v3[1] * b.v1[2] + v4[1] * b.v1[3], v1[1] * b.v2[0] + v2[1] * b.v2[1] + v3[1] * b.v2[2] + v4[1] * b.v2[3], v1[1] * b.v3[0] + v2[1] * b.v3[1] + v3[1] * b.v3[2] + v4[1] * b.v3[3], v1[1] * b.v4[0] + v2[1] * b.v4[1] + v3[1] * b.v4[2] + v4[1] * b.v4[3],
                       v1[2] * b.v1[0] + v2[2] * b.v1[1] + v3[2] * b.v1[2] + v4[2] * b.v1[3], v1[2] * b.v2[0] + v2[2] * b.v2[1] + v3[2] * b.v2[2] + v4[2] * b.v2[3], v1[2] * b.v3[0] + v2[2] * b.v3[1] + v3[2] * b.v3[2] + v4[2] * b.v3[3], v1[2] * b.v4[0] + v2[2] * b.v4[1] + v3[2] * b.v4[2] + v4[2] * b.v4[3],
@@ -125,7 +125,7 @@ math::mat4 math::mat4::operator*(const math::mat4& b){
     return c;
 }
 
-math::vec4 math::mat4::operator*(const math::vec4& b){
+math::vec4 math::mat4::operator*(const math::vec4& b) const{
     return v1 * b[0] + v2 * b[1] + v3 * b[2] + v4 * b[3];
 }
 
@@ -287,6 +287,68 @@ void math::mat4::transpose(){
         }
     }
     (*this) = tmp;
+}
+
+math::mat4 math::rotate(const math::mat4& m, float angleRadians, const math::vec3& axis) {
+    float c = std::cos(angleRadians);
+    float s = std::sin(angleRadians);
+
+    math::vec3 a = math::normalize(axis);
+    math::vec3 temp = a * (1.0f - c);
+
+    math::mat4 rot; // Ensure this initializes as an identity matrix!
+    rot.identity();
+    
+    rot[0][0] = c + temp.x * a.x;
+    rot[0][1] = temp.x * a.y + s * a.z;
+    rot[0][2] = temp.x * a.z - s * a.y;
+    rot[0][3] = 0.0f;
+
+    rot[1][0] = temp.y * a.x - s * a.z;
+    rot[1][1] = c + temp.y * a.y;
+    rot[1][2] = temp.y * a.z + s * a.x;
+    rot[1][3] = 0.0f;
+
+    rot[2][0] = temp.z * a.x + s * a.y;
+    rot[2][1] = temp.z * a.y - s * a.x;
+    rot[2][2] = c + temp.z * a.z;
+    rot[2][3] = 0.0f;
+
+    rot[3][0] = 0.0f;
+    rot[3][1] = 0.0f;
+    rot[3][2] = 0.0f;
+    rot[3][3] = 1.0f;
+
+    return m * rot;
+}
+
+math::vec3 math::ExtractEulerAnglesZYX(const math::mat4& m) {
+    math::vec3 euler; // x = pitch, y = yaw, z = roll (in radians)
+
+    // In your mat4::rotation, m[0][2] is -sin(rotation.y)
+    float sinYaw = -m[0][2];
+
+    // Clamp to avoid NaN from floating-point inaccuracies
+    if (sinYaw <= -1.0f) {
+        euler.y = -1.5707963f; // -PI / 2
+    } else if (sinYaw >= 1.0f) {
+        euler.y = 1.5707963f;  // +PI / 2
+    } else {
+        euler.y = std::asin(sinYaw);
+    }
+
+    // Check for Gimbal Lock (when yaw is near +/- 90 degrees)
+    if (std::abs(sinYaw) > 0.9999f) {
+        euler.z = 0.0f;
+        euler.x = std::atan2(-m[2][1], m[1][1]);
+    } else {
+        // m[1][2] = sin(x)*cos(y), m[2][2] = cos(x)*cos(y)
+        euler.x = std::atan2(m[1][2], m[2][2]);
+        // m[0][1] = cos(y)*sin(z), m[0][0] = cos(y)*cos(z)
+        euler.z = std::atan2(m[0][1], m[0][0]);
+    }
+
+    return euler;
 }
 
 }
