@@ -76,12 +76,14 @@ PhysicsSystem physics;
 // meshes / textures
 Mesh sphereMesh, csmMesh, quadMesh;
 Image earthTexture, moonTexture, csmTexture, starsTexture, plumeTexture;
+Image markerTextures[6];
 Material* earthMat = nullptr;
 Material* moonMat = nullptr;
 Material* csmMat = nullptr;
 Material* quadMat = nullptr;
 Material* starsMat = nullptr;
 Material* plumeMat = nullptr;
+Material* markerMats = nullptr;
 CharSet font;
 
 // game state
@@ -433,6 +435,13 @@ int main(){
     csmTexture.Load("assets/csm.png");
     starsTexture.Load("assets/stars.png");
     plumeTexture.Load("assets/plume.png");
+    markerTextures[0].Load("assets/prograde.png");
+    markerTextures[1].Load("assets/retrograde.png");
+    markerTextures[2].Load("assets/radial_out.png");
+    markerTextures[3].Load("assets/radial_in.png");
+    markerTextures[4].Load("assets/normal.png");
+    markerTextures[5].Load("assets/antinormal.png");
+
 
     earthMat = new Material();
     moonMat = new Material();
@@ -440,6 +449,7 @@ int main(){
     quadMat = new Material();
     starsMat = new Material();
     plumeMat = new Material();
+    markerMats = new Material[6]();
 
     earthMat->glImage.image = &earthTexture;
     earthMat->Load();
@@ -453,6 +463,11 @@ int main(){
     starsMat->Load();
     plumeMat->glImage.image = &plumeTexture;
     plumeMat->Load();
+    for(int i = 0; i < 6; i++){
+        markerMats[i].fragment.sourceFile = "assets/marker.frag";`
+        markerMats[i].glImage.image = &(markerTextures[i]);
+        markerMats[i].Load();
+    }
 
     // NOTE: markers need individual textures but share quadMat's shader program.
     // For now all markers use plume.png; you can swap per-marker material later.
@@ -521,7 +536,9 @@ int main(){
         markerTransforms[i]->scale = vmake(8.0f, 8.0f, 8.0f);
         {
             MeshRenderer* r = markerEntities[i].AddComponent<MeshRenderer>();
-            r->mesh = &quadMesh; r->material = quadMat; r->Load();
+            r->mesh = &quadMesh;
+            r->material = &markerMats[i];
+            r->Load();
         }
     }
 
