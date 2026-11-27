@@ -24,7 +24,7 @@ math::mat4 TransformComponent::GetModelMatrix(){
 
     math::mat4 modelMat = positionMat * rotationMat * scaleMat;
 
-    if(parent != nullptr) modelMat = modelMat * parent->GetModelMatrix();   
+    if(parent != nullptr) modelMat = modelMat * parent->GetModelMatrix();
                                       
     forward = math::normalize(math::vec3()-(math::vec3)modelMat[2]);
     up = math::normalize((math::vec3)modelMat[1]);

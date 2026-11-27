@@ -219,9 +219,14 @@ void UpdateInput(float deltaTime){
         if(alt < physics.atmosphereTop){
             timeWarp = 1.0f;
         }
-        if(!moonSoI && distMoon < physics.moonSoI){
+        bool nowInMoonSoI = distMoon < physics.moonSoI;
+        if(nowInMoonSoI && !moonSoI){
+            // just entered Moon SoI: disable warp
             moonSoI = true;
             timeWarp = 1.0f;
+        } else if(!nowInMoonSoI){
+            // left Moon SoI: warp can be re-enabled
+            moonSoI = false;
         }
     }
 
@@ -232,8 +237,8 @@ void UpdateInput(float deltaTime){
     float wheel = dem::Input::GetAxisWheel();
     if(wheel < 0.0f) cameraDistance *= 1.1f;
     if(wheel > 0.0f) cameraDistance *= 0.9f;
-    if(cameraDistance < 15.0f) cameraDistance = 15.0f;
-    if(cameraDistance > 3000.0f) cameraDistance = 3000.0f;
+    if(cameraDistance < 1.0f) cameraDistance = 1.0f;
+    if(cameraDistance > 30000.0f) cameraDistance = 30000.0f;
 
     cameraYaw += dem::Input::GetAxisX() * 0.06f;
     cameraPitch += dem::Input::GetAxisY() * 0.06f;
@@ -299,15 +304,13 @@ void CheckLanding(){
 void UpdatePlume(){
     if(!plumeTransform) return;
     if(thrust > 0.0f && timeWarp <= 1.0f && !landed){
-        // plume behind ship, opposite to forward
-        math::vec3 plumePos = vsub(csmTransform->position, vscale(csmTransform->up, 25.0f));
-        plumeTransform->position = plumePos;
-        faceCamera(plumeTransform->rotation, plumePos, cameraTransform->position);
-        float scale = 5.0f + (thrust / maxThrust) * 15.0f;
-        plumeTransform->scale = vmake(scale, scale, scale);
+        plumeTransform->position = math::vec3(0.0f, -7.3f, 0.0);
+
+        // float zLen = 8.0f + (thrust / maxThrust) * 90.0f;
+        // plumeTransform->scale = vmake(10.0f, 10.0f, zLen);
+
     } else {
-        // hide by scaling to 0
-        plumeTransform->scale = vmake(0.001f, 0.001f, 0.001f);
+        plumeTransform->scale = vmake(1.f, 1.f, 0.0001f);
     }
 }
 
@@ -401,7 +404,12 @@ void UpdateHUD(){
         }
     } else {
         text = "H: orbit info   K/L: warp   Shift/Ctrl: thrust   X: cut\n";
-        text += "WASD: pitch/yaw   QE: roll   Wheel: zoom   Mouse: camera";
+        text += "WASD: pitch/yaw   QE: roll   Wheel: zoom   Mouse: camera\n";
+        math::mat4 plumeMatrix = plumeTransform->GetModelMatrix();
+        math::vec4 plumePosition = plumeMatrix[3];
+        text += "Plume: " + std::to_string(plumePosition[0]) + " " + std::to_string(plumePosition[1]) + " " + std::to_string(plumePosition[2]) + "\n";
+        text += "CSM: " + std::to_string(csmTransform->position.x) + " " + std::to_string(csmTransform->position.y) + " " + std::to_string(csmTransform->position.z) + "\n";
+
         std::transform(text.begin(), text.end(), text.begin(), ::toupper);
     }
 
@@ -434,7 +442,7 @@ int main(){
     moonTexture.Load("assets/moon.png");
     csmTexture.Load("assets/csm.png");
     starsTexture.Load("assets/stars.png");
-    plumeTexture.Load("assets/plume.png");
+    plumeTexture.Load("assets/cat.png");
     markerTextures[0].Load("assets/prograde.png");
     markerTextures[1].Load("assets/retrograde.png");
     markerTextures[2].Load("assets/radial_out.png");
@@ -461,10 +469,11 @@ int main(){
     quadMat->Load();
     starsMat->glImage.image = &starsTexture;
     starsMat->Load();
+    plumeMat->fragment.sourceFile = "assets/marker.frag";
     plumeMat->glImage.image = &plumeTexture;
     plumeMat->Load();
     for(int i = 0; i < 6; i++){
-        markerMats[i].fragment.sourceFile = "assets/marker.frag";`
+        markerMats[i].fragment.sourceFile = "assets/marker.frag";
         markerMats[i].glImage.image = &(markerTextures[i]);
         markerMats[i].Load();
     }
@@ -521,6 +530,7 @@ int main(){
     // Engine plume
     plumeEntity = ecs::CreateEntity();
     plumeTransform = plumeEntity.AddComponent<TransformComponent>();
+    plumeTransform->parent = csmTransform;
     plumeTransform->position = vmake(0,0,0);
     plumeTransform->scale = vmake(0.001f, 0.001f, 0.001f);
     {
